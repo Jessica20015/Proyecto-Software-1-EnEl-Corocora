@@ -1,0 +1,41 @@
+{
+  "components": [
+    {
+      "label": "Hallazgos de la visita",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_a5lqsaj",
+        "columns": null
+      },
+      "id": "Field_08xui6d",
+      "key": "hallazgosVisita",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "El transformador esta fallando"
+    },
+    {
+      "label": "Valor total de la visita (COP)",
+      "type": "number",
+      "layout": {
+        "row": "Row_39zzzzg",
+        "columns": null
+      },
+      "id": "Field_4zdmen2",
+      "key": "valorTotal",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": 100
+    }
+  ],
+  "type": "default",
+  "id": "realizarReporteVisitaTecnica",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

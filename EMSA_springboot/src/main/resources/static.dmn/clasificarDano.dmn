@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0kuc2co" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <decision id="clasificacionRepuestos" name="Clasificación de repuestos" camunda:historyTimeToLive="30">
+    <decisionTable id="DecisionTable_0zqboxx" hitPolicy="UNIQUE">
+      <input id="Input_1" label="Nivel de daño">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>nivelDano</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Requiere materiales adicionales" name="requiereMateriales" typeRef="boolean" />
+      <rule id="DecisionRule_Leve">
+        <inputEntry id="UnaryTests_Leve">
+          <text>"Leve"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_Leve">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_Moderado">
+        <inputEntry id="UnaryTests_Moderado">
+          <text>"Moderado"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_Moderado">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_Severo">
+        <inputEntry id="UnaryTests_Severo">
+          <text>"Severo"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_Severo">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="clasificacionRepuestos">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

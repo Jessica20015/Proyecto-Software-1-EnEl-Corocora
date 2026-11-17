@@ -1,0 +1,85 @@
+{
+  "components": [
+    {
+      "label": "Nombre",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_ujzde8g",
+        "columns": null
+      },
+      "id": "Field_xd6ncf1",
+      "key": "nombre",
+      "disabled": true
+    },
+    {
+      "label": "Dirección de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0epf91d",
+        "columns": null
+      },
+      "id": "Field_hodzdoc",
+      "key": "domicilio",
+      "disabled": true
+    },
+    {
+      "label": "Falla presentada",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_9is0j8h",
+        "columns": null
+      },
+      "id": "Field_t9lgmxg",
+      "key": "falla",
+      "disabled": true
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Date",
+      "label": "Fecha de la visita",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_9edn581",
+        "columns": null
+      },
+      "id": "Field_u33xtpl",
+      "key": "fechaVisita",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Franja horaria",
+      "values": [
+        {
+          "label": "Mañana (8:00 - 12:00)",
+          "value": "manana"
+        },
+        {
+          "label": "Tarde (14:00 - 18:00)",
+          "value": "tarde"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_pft75v2",
+        "columns": null
+      },
+      "id": "Field_seh60kv",
+      "key": "franjaHorario",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "manana"
+    }
+  ],
+  "type": "default",
+  "id": "agendarVisitaTecnica",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

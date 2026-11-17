@@ -1,0 +1,208 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Tipificar y enrutar la PQR\nC7 · Atender una PQR del usuario — **Orientador y enrutador de usuarios**.\n\nLa tabla DMN *Tipificar la PQR y fijar el término* no reconoció el tipo o el asunto. Corrija la tipificación a partir de los hechos. Al completar, la PQR vuelve a la tabla, que fija el término y el proceso que aporta la evidencia.",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "PQR radicada",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "radicado",
+          "label": "Radicado",
+          "disabled": true,
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "canalRadicacion",
+          "label": "Canal",
+          "disabled": true,
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "codigoSuministro",
+          "label": "Código de suministro",
+          "disabled": true,
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "nombrePeticionario",
+          "label": "Peticionario",
+          "disabled": true,
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "descripcionPQR",
+          "label": "Hechos y motivo",
+          "disabled": true,
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "pretension",
+          "label": "Pretensión",
+          "disabled": true,
+          "id": "Field_008",
+          "layout": {
+            "row": "Row_06",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "alertaProcedencia",
+          "label": "Motivo de la tipificación manual",
+          "disabled": true,
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_07",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Tipificación",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "select",
+          "key": "tipoPQR",
+          "label": "Tipo de PQR",
+          "values": [
+            {
+              "label": "Petición",
+              "value": "PETICION"
+            },
+            {
+              "label": "Queja",
+              "value": "QUEJA"
+            },
+            {
+              "label": "Reclamo",
+              "value": "RECLAMO"
+            },
+            {
+              "label": "Recurso de reposición contra un acto de la empresa",
+              "value": "RECURSO_REPOSICION"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011",
+          "layout": {
+            "row": "Row_09",
+            "columns": 8
+          }
+        },
+        {
+          "type": "select",
+          "key": "asunto",
+          "label": "Asunto",
+          "values": [
+            {
+              "label": "Facturación",
+              "value": "FACTURACION"
+            },
+            {
+              "label": "Medición del consumo",
+              "value": "MEDICION"
+            },
+            {
+              "label": "Suspensión, corte o reconexión",
+              "value": "SUSPENSION_RECONEXION"
+            },
+            {
+              "label": "Recuperación de consumos",
+              "value": "RECUPERACION_CONSUMOS"
+            },
+            {
+              "label": "Calidad y continuidad del servicio",
+              "value": "CALIDAD_CONTINUIDAD"
+            },
+            {
+              "label": "Atención al usuario",
+              "value": "ATENCION_SERVICIO"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012",
+          "layout": {
+            "row": "Row_09",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "justificacionTipificacion",
+          "label": "Justificación de la tipificación",
+          "description": "Queda en el expediente único.",
+          "validate": {
+            "required": true,
+            "minLength": 15
+          },
+          "id": "Field_013",
+          "layout": {
+            "row": "Row_10",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_010",
+      "layout": {
+        "row": "Row_08",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "TipificarEnrutarPQR",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

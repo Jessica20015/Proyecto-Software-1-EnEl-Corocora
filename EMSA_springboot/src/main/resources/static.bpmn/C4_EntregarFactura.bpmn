@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_C4_EntregarFactura" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <bpmn:collaboration id="Collaboration_EntregarFactura">
+    <bpmn:participant id="Participant_Entrega" name="ENEL La Corocora — C4.1 · Entregar factura y registrar prueba de entrega" processRef="C4_EntregarFactura">
+      <bpmn:documentation>Proceso global reutilizable, invocado por la Call Activity de C4 (factura ordinaria y refacturación).</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="Participant_Operador" name="Operador de entrega (correo electrónico certificado / mensajería física)" />
+    <bpmn:participant id="Participant_UsuarioEntrega" name="Usuario / suscriptor" />
+    <bpmn:messageFlow id="MessageFlow_Envio" name="Factura" sourceRef="Activity_EnviarFactura" targetRef="Participant_Operador" />
+    <bpmn:messageFlow id="MessageFlow_Confirmacion" name="Confirmación de entrega" sourceRef="Participant_Operador" targetRef="Event_ConfirmacionEntrega" />
+    <bpmn:messageFlow id="MessageFlow_Devolucion" name="Devolución" sourceRef="Participant_Operador" targetRef="Event_DevolucionFactura" />
+    <bpmn:messageFlow id="MessageFlow_EntregaAlterna" name="Factura por medio alterno" sourceRef="Activity_GestionarEntregaFallida" targetRef="Participant_UsuarioEntrega" />
+  </bpmn:collaboration>
+  <bpmn:process id="C4_EntregarFactura" name="C4.1 · Entregar factura y registrar prueba de entrega" isExecutable="true" camunda:historyTimeToLive="180" camunda:versionTag="1.0">
+    <bpmn:laneSet id="LaneSet_C4_EntregarFactura">
+      <bpmn:lane id="Lane_EntregaSistema" name="Sistema comercial · canal de entrega">
+        <bpmn:flowNodeRef>StartEvent_EntregaSolicitada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JoinEnvio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_EnviarFactura</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_EsperaEntrega</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_ConfirmacionEntrega</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_DevolucionFactura</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_PlazoEntregaVencido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JoinFallo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Intentos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JoinRegistro</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_RegistrarPrueba</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_PruebaRegistrada</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_EntregaAnalista" name="Analista de facturación">
+        <bpmn:flowNodeRef>Activity_GestionarEntregaFallida</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_EntregaSolicitada" name="Entrega de factura solicitada">
+      <bpmn:outgoing>Flow_E01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_JoinEnvio">
+      <bpmn:incoming>Flow_E01</bpmn:incoming>
+      <bpmn:incoming>Flow_E10</bpmn:incoming>
+      <bpmn:outgoing>Flow_E02</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_EnviarFactura" name="Enviar factura por el canal asignado" camunda:delegateExpression="${enviarFactura}">
+      <bpmn:documentation>Primer intento por el canal preferido del usuario; los reintentos usan el canal físico.</bpmn:documentation>
+      <bpmn:incoming>Flow_E02</bpmn:incoming>
+      <bpmn:outgoing>Flow_E03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:eventBasedGateway id="Gateway_EsperaEntrega">
+      <bpmn:incoming>Flow_E03</bpmn:incoming>
+      <bpmn:outgoing>Flow_E04</bpmn:outgoing>
+      <bpmn:outgoing>Flow_E05</bpmn:outgoing>
+      <bpmn:outgoing>Flow_E06</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="Event_ConfirmacionEntrega" name="Confirmación de entrega recibida">
+      <bpmn:incoming>Flow_E04</bpmn:incoming>
+      <bpmn:outgoing>Flow_E12</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Confirmacion" messageRef="Message_ConfirmacionEntrega" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="Event_DevolucionFactura" name="Devolución de factura recibida">
+      <bpmn:incoming>Flow_E05</bpmn:incoming>
+      <bpmn:outgoing>Flow_E07</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Devolucion" messageRef="Message_DevolucionFactura" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="Event_PlazoEntregaVencido" name="Plazo de entrega vencido">
+      <bpmn:incoming>Flow_E06</bpmn:incoming>
+      <bpmn:outgoing>Flow_E08</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_PlazoEntrega">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">${plazoEntrega}</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_JoinFallo">
+      <bpmn:incoming>Flow_E07</bpmn:incoming>
+      <bpmn:incoming>Flow_E08</bpmn:incoming>
+      <bpmn:outgoing>Flow_E09</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_Intentos" name="¿Quedan intentos de entrega?">
+      <bpmn:incoming>Flow_E09</bpmn:incoming>
+      <bpmn:outgoing>Flow_E10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_E11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_GestionarEntregaFallida" name="Gestionar entrega fallida" camunda:formRef="GestionarEntregaFallida" camunda:formRefBinding="deployment" camunda:candidateGroups="analistas-facturacion">
+      <bpmn:incoming>Flow_E11</bpmn:incoming>
+      <bpmn:outgoing>Flow_E13</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_JoinRegistro">
+      <bpmn:incoming>Flow_E12</bpmn:incoming>
+      <bpmn:incoming>Flow_E13</bpmn:incoming>
+      <bpmn:outgoing>Flow_E14</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_RegistrarPrueba" name="Registrar prueba de entrega" camunda:delegateExpression="${registrarPruebaEntrega}">
+      <bpmn:documentation>Cierra el indicador 'ciclo de facturación' (t3 = entrega) y alimenta el 'costo por factura entregada'.</bpmn:documentation>
+      <bpmn:incoming>Flow_E14</bpmn:incoming>
+      <bpmn:outgoing>Flow_E15</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_PruebaRegistrada" name="Prueba de entrega registrada">
+      <bpmn:incoming>Flow_E15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_E01" sourceRef="StartEvent_EntregaSolicitada" targetRef="Gateway_JoinEnvio" />
+    <bpmn:sequenceFlow id="Flow_E02" sourceRef="Gateway_JoinEnvio" targetRef="Activity_EnviarFactura" />
+    <bpmn:sequenceFlow id="Flow_E03" sourceRef="Activity_EnviarFactura" targetRef="Gateway_EsperaEntrega" />
+    <bpmn:sequenceFlow id="Flow_E04" sourceRef="Gateway_EsperaEntrega" targetRef="Event_ConfirmacionEntrega" />
+    <bpmn:sequenceFlow id="Flow_E05" sourceRef="Gateway_EsperaEntrega" targetRef="Event_DevolucionFactura" />
+    <bpmn:sequenceFlow id="Flow_E06" sourceRef="Gateway_EsperaEntrega" targetRef="Event_PlazoEntregaVencido" />
+    <bpmn:sequenceFlow id="Flow_E07" sourceRef="Event_DevolucionFactura" targetRef="Gateway_JoinFallo" />
+    <bpmn:sequenceFlow id="Flow_E08" sourceRef="Event_PlazoEntregaVencido" targetRef="Gateway_JoinFallo" />
+    <bpmn:sequenceFlow id="Flow_E09" sourceRef="Gateway_JoinFallo" targetRef="Gateway_Intentos" />
+    <bpmn:sequenceFlow id="Flow_E10" name="Sí: reintentar por canal físico" sourceRef="Gateway_Intentos" targetRef="Gateway_JoinEnvio">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${intentosEntrega &lt; maxIntentosEntrega}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_E11" name="No" sourceRef="Gateway_Intentos" targetRef="Activity_GestionarEntregaFallida">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${intentosEntrega &gt;= maxIntentosEntrega}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_E12" sourceRef="Event_ConfirmacionEntrega" targetRef="Gateway_JoinRegistro" />
+    <bpmn:sequenceFlow id="Flow_E13" sourceRef="Activity_GestionarEntregaFallida" targetRef="Gateway_JoinRegistro" />
+    <bpmn:sequenceFlow id="Flow_E14" sourceRef="Gateway_JoinRegistro" targetRef="Activity_RegistrarPrueba" />
+    <bpmn:sequenceFlow id="Flow_E15" sourceRef="Activity_RegistrarPrueba" targetRef="Event_PruebaRegistrada" />
+    <bpmn:textAnnotation id="TextAnnotation_Prueba">
+      <bpmn:text>Prueba de entrega: fecha-hora, canal y soporte. Cierra el indicador 'ciclo de facturación' (t3) y alimenta el 'costo por factura entregada'.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_Prueba" associationDirection="None" sourceRef="TextAnnotation_Prueba" targetRef="Activity_RegistrarPrueba" />
+  </bpmn:process>
+  <bpmn:message id="Message_ConfirmacionEntrega" name="MsgConfirmacionEntrega" />
+  <bpmn:message id="Message_DevolucionFactura" name="MsgDevolucionFactura" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_EntregarFactura">
+    <bpmndi:BPMNPlane id="BPMNPlane_EntregarFactura" bpmnElement="Collaboration_EntregarFactura">
+      <bpmndi:BPMNShape id="Participant_Entrega_di" bpmnElement="Participant_Entrega" isHorizontal="true" isExpanded="true">
+        <dc:Bounds x="160" y="160" width="1500" height="540" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Operador_di" bpmnElement="Participant_Operador" isHorizontal="true">
+        <dc:Bounds x="160" y="40" width="1500" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_UsuarioEntrega_di" bpmnElement="Participant_UsuarioEntrega" isHorizontal="true">
+        <dc:Bounds x="160" y="740" width="1500" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_EntregaSistema_di" bpmnElement="Lane_EntregaSistema" isHorizontal="true">
+        <dc:Bounds x="190" y="160" width="1470" height="360" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_EntregaAnalista_di" bpmnElement="Lane_EntregaAnalista" isHorizontal="true">
+        <dc:Bounds x="190" y="520" width="1470" height="180" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="MessageFlow_Envio_di" bpmnElement="MessageFlow_Envio">
+        <di:waypoint x="470" y="290" />
+        <di:waypoint x="470" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Confirmacion_di" bpmnElement="MessageFlow_Confirmacion">
+        <di:waypoint x="700" y="100" />
+        <di:waypoint x="700" y="212" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Devolucion_di" bpmnElement="MessageFlow_Devolucion">
+        <di:waypoint x="745" y="100" />
+        <di:waypoint x="745" y="305" />
+        <di:waypoint x="713" y="318" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_EntregaAlterna_di" bpmnElement="MessageFlow_EntregaAlterna">
+        <di:waypoint x="1050" y="650" />
+        <di:waypoint x="1050" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_EntregaSolicitada_di" bpmnElement="StartEvent_EntregaSolicitada">
+        <dc:Bounds x="232" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="355" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinEnvio_di" bpmnElement="Gateway_JoinEnvio" isMarkerVisible="true">
+        <dc:Bounds x="315" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_EnviarFactura_di" bpmnElement="Activity_EnviarFactura">
+        <dc:Bounds x="420" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_EsperaEntrega_di" bpmnElement="Gateway_EsperaEntrega">
+        <dc:Bounds x="575" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ConfirmacionEntrega_di" bpmnElement="Event_ConfirmacionEntrega">
+        <dc:Bounds x="682" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="612" y="250" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_DevolucionFactura_di" bpmnElement="Event_DevolucionFactura">
+        <dc:Bounds x="682" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="670" y="355" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_PlazoEntregaVencido_di" bpmnElement="Event_PlazoEntregaVencido">
+        <dc:Bounds x="682" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="725" y="455" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinFallo_di" bpmnElement="Gateway_JoinFallo" isMarkerVisible="true">
+        <dc:Bounds x="820" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Intentos_di" bpmnElement="Gateway_Intentos" isMarkerVisible="true">
+        <dc:Bounds x="925" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925" y="280" width="100" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_GestionarEntregaFallida_di" bpmnElement="Activity_GestionarEntregaFallida">
+        <dc:Bounds x="1000" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinRegistro_di" bpmnElement="Gateway_JoinRegistro" isMarkerVisible="true">
+        <dc:Bounds x="1225" y="205" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_RegistrarPrueba_di" bpmnElement="Activity_RegistrarPrueba">
+        <dc:Bounds x="1330" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_PruebaRegistrada_di" bpmnElement="Event_PruebaRegistrada">
+        <dc:Bounds x="1502" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1495" y="255" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_E01_di" bpmnElement="Flow_E01">
+        <di:waypoint x="268" y="330" />
+        <di:waypoint x="315" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E02_di" bpmnElement="Flow_E02">
+        <di:waypoint x="365" y="330" />
+        <di:waypoint x="420" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E03_di" bpmnElement="Flow_E03">
+        <di:waypoint x="520" y="330" />
+        <di:waypoint x="575" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E04_di" bpmnElement="Flow_E04">
+        <di:waypoint x="600" y="305" />
+        <di:waypoint x="600" y="230" />
+        <di:waypoint x="682" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E05_di" bpmnElement="Flow_E05">
+        <di:waypoint x="625" y="330" />
+        <di:waypoint x="682" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E06_di" bpmnElement="Flow_E06">
+        <di:waypoint x="600" y="355" />
+        <di:waypoint x="600" y="440" />
+        <di:waypoint x="682" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E07_di" bpmnElement="Flow_E07">
+        <di:waypoint x="718" y="330" />
+        <di:waypoint x="820" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E08_di" bpmnElement="Flow_E08">
+        <di:waypoint x="718" y="440" />
+        <di:waypoint x="845" y="440" />
+        <di:waypoint x="845" y="355" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E09_di" bpmnElement="Flow_E09">
+        <di:waypoint x="870" y="330" />
+        <di:waypoint x="925" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E10_di" bpmnElement="Flow_E10">
+        <di:waypoint x="950" y="355" />
+        <di:waypoint x="950" y="490" />
+        <di:waypoint x="340" y="490" />
+        <di:waypoint x="340" y="355" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="560" y="495" width="160" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E11_di" bpmnElement="Flow_E11">
+        <di:waypoint x="975" y="330" />
+        <di:waypoint x="1050" y="330" />
+        <di:waypoint x="1050" y="570" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1058" y="440" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E12_di" bpmnElement="Flow_E12">
+        <di:waypoint x="718" y="230" />
+        <di:waypoint x="1225" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E13_di" bpmnElement="Flow_E13">
+        <di:waypoint x="1100" y="610" />
+        <di:waypoint x="1250" y="610" />
+        <di:waypoint x="1250" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E14_di" bpmnElement="Flow_E14">
+        <di:waypoint x="1275" y="230" />
+        <di:waypoint x="1330" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E15_di" bpmnElement="Flow_E15">
+        <di:waypoint x="1430" y="230" />
+        <di:waypoint x="1502" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_Prueba_di" bpmnElement="TextAnnotation_Prueba">
+        <dc:Bounds x="1300" y="320" width="300" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_Prueba_di" bpmnElement="Association_Prueba">
+        <di:waypoint x="1400" y="320" />
+        <di:waypoint x="1390" y="270" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

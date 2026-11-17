@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_TipificarPQR" name="C7 - Tipificar la PQR y fijar el término aplicable" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <decision id="TipificarPQR" name="Tipificar la PQR y fijar el término aplicable" camunda:historyTimeToLive="180">
+    <description>C7 · Atender una PQR del usuario. Primera actividad del perfil: asignar tipificación y término aplicable. Fija el término en días hábiles (art. 158 de la Ley 142 de 1994: 15 días hábiles para peticiones, quejas, reclamos y recursos), el proceso que debe aportar la evidencia según el asunto (interfaces de entrada C2, C3, C4, C5 y C6), el plazo interno para esa evidencia, la prioridad, si la revisión jurídica es obligatoria y las alertas de procedencia. Las alertas no rechazan la PQR: la regla no automatiza decisiones desfavorables (§10). Parametrización de referencia que G3 debe validar antes de su vigencia (§8.4). Hit policy FIRST: gana la primera regla que cumple; la última regla es el caso no previsto.</description>
+    <decisionTable id="DecisionTable_TipificarPQR" hitPolicy="FIRST">
+      <input id="Input_tipoPQR" label="Tipo de PQR" camunda:inputVariable="tipoPQR">
+        <inputExpression id="InputExpression_tipoPQR" typeRef="string">
+          <text>tipoPQR</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_tipoPQR">
+          <text>&quot;PETICION&quot;,&quot;QUEJA&quot;,&quot;RECLAMO&quot;,&quot;RECURSO_REPOSICION&quot;</text>
+        </inputValues>
+      </input>
+      <input id="Input_asunto" label="Asunto" camunda:inputVariable="asunto">
+        <inputExpression id="InputExpression_asunto" typeRef="string">
+          <text>asunto</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_asunto">
+          <text>&quot;FACTURACION&quot;,&quot;MEDICION&quot;,&quot;SUSPENSION_RECONEXION&quot;,&quot;RECUPERACION_CONSUMOS&quot;,&quot;CALIDAD_CONTINUIDAD&quot;,&quot;ATENCION_SERVICIO&quot;,&quot;OTRO&quot;</text>
+        </inputValues>
+      </input>
+      <input id="Input_mesesDesdeFactura" label="Meses desde la expedición de la factura" camunda:inputVariable="mesesDesdeFactura">
+        <inputExpression id="InputExpression_mesesDesdeFactura" typeRef="integer">
+          <text>mesesDesdeFactura</text>
+        </inputExpression>
+      </input>
+      <output id="Output_tipificacionConcluyente" label="¿Tipificación concluyente?" name="tipificacionConcluyente" typeRef="boolean" />
+      <output id="Output_terminoDiasHabiles" label="Término (días hábiles)" name="terminoDiasHabiles" typeRef="integer" />
+      <output id="Output_procesoEvidencia" label="Proceso fuente de la evidencia" name="procesoEvidencia" typeRef="string">
+        <outputValues id="UnaryTests_out_procesoEvidencia">
+          <text>&quot;C2&quot;,&quot;C3&quot;,&quot;C4&quot;,&quot;C5&quot;,&quot;C6&quot;,&quot;NINGUNO&quot;</text>
+        </outputValues>
+      </output>
+      <output id="Output_plazoEvidenciaDiasHabiles" label="Plazo interno de evidencia (días hábiles)" name="plazoEvidenciaDiasHabiles" typeRef="integer" />
+      <output id="Output_requiereRevisionJuridica" label="¿Revisión jurídica obligatoria?" name="requiereRevisionJuridica" typeRef="boolean" />
+      <output id="Output_prioridad" label="Prioridad" name="prioridad" typeRef="string">
+        <outputValues id="UnaryTests_out_prioridad">
+          <text>&quot;ALTA&quot;,&quot;NORMAL&quot;</text>
+        </outputValues>
+      </output>
+      <output id="Output_alertaProcedencia" label="Alerta para el analista" name="alertaProcedencia" typeRef="string" />
+      <rule id="Rule_01">
+        <description>Asunto «Otro»: la regla no puede enrutar la PQR; la tipifica el orientador.</description>
+        <inputEntry id="UnaryTests_01a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_01b"><text>&quot;OTRO&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_01c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_01a"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_01b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_01c"><text>&quot;NINGUNO&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_01d"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_01e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_01f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_01g"><text>&quot;Asunto sin tipificar: el orientador debe tipificar y enrutar la PQR.&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_02">
+        <description>Recurso de reposición (contra una decisión de C7 o contra un acto de C5 o C6): siempre con revisión jurídica y prioridad alta. La evidencia ya está en el expediente.</description>
+        <inputEntry id="UnaryTests_02a"><text>&quot;RECURSO_REPOSICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_02b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_02c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_02a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_02b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_02c"><text>&quot;NINGUNO&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_02d"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_02e"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_02f"><text>&quot;ALTA&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_02g"><text>&quot;Recurso de reposición: lo resuelve la empresa con revisión jurídica; la apelación en subsidio se remite a la SSPD (art. 154, Ley 142).&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_03">
+        <description>Reclamo sobre una factura con más de cinco meses de expedida (art. 154, Ley 142). La regla solo alerta: decide el analista con revisión jurídica.</description>
+        <inputEntry id="UnaryTests_03a"><text>&quot;RECLAMO&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_03b"><text>&quot;FACTURACION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_03c"><text>&gt; 5</text></inputEntry>
+        <outputEntry id="LiteralExpression_03a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_03b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_03c"><text>&quot;C4&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_03d"><text>2</text></outputEntry>
+        <outputEntry id="LiteralExpression_03e"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_03f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_03g"><text>&quot;La factura reclamada tiene más de cinco meses de expedida (art. 154, Ley 142): verificar la procedencia. La regla no rechaza la PQR; decide el analista.&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_04">
+        <description>Reclamo o petición sobre facturación: evidencia de C4 (trazabilidad de la factura hasta la lectura y la versión de la regla tarifaria).</description>
+        <inputEntry id="UnaryTests_04a"><text>&quot;RECLAMO&quot;,&quot;PETICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_04b"><text>&quot;FACTURACION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_04c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_04a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_04b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_04c"><text>&quot;C4&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_04d"><text>2</text></outputEntry>
+        <outputEntry id="LiteralExpression_04e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_04f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_04g"><text>&quot;&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_05">
+        <description>Reclamo o petición sobre la medición del consumo: evidencia de C3 (lecturas y secuencialidad).</description>
+        <inputEntry id="UnaryTests_05a"><text>&quot;RECLAMO&quot;,&quot;PETICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_05b"><text>&quot;MEDICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_05c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_05a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_05b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_05c"><text>&quot;C3&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_05d"><text>3</text></outputEntry>
+        <outputEntry id="LiteralExpression_05e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_05f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_05g"><text>&quot;&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_06">
+        <description>Reclamo o petición sobre suspensión, corte o reconexión: evidencia de C5, prioridad alta y revisión jurídica, porque afecta la prestación del servicio.</description>
+        <inputEntry id="UnaryTests_06a"><text>&quot;RECLAMO&quot;,&quot;PETICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_06b"><text>&quot;SUSPENSION_RECONEXION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_06c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_06a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_06b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_06c"><text>&quot;C5&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_06d"><text>1</text></outputEntry>
+        <outputEntry id="LiteralExpression_06e"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_06f"><text>&quot;ALTA&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_06g"><text>&quot;Afecta la prestación del servicio: verificar de inmediato si procede la reconexión.&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_07">
+        <description>Reclamo o petición sobre recuperación de consumos: evidencia de C6 y revisión jurídica del debido proceso.</description>
+        <inputEntry id="UnaryTests_07a"><text>&quot;RECLAMO&quot;,&quot;PETICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_07b"><text>&quot;RECUPERACION_CONSUMOS&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_07c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_07a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_07b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_07c"><text>&quot;C6&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_07d"><text>3</text></outputEntry>
+        <outputEntry id="LiteralExpression_07e"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_07f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_07g"><text>&quot;Recuperación de consumos: verificar el período, la secuencialidad de lecturas y el soporte de la actuación de C6.&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_08">
+        <description>Cualquier PQR sobre calidad y continuidad del servicio: evidencia de C2 (evento, causa y afectación).</description>
+        <inputEntry id="UnaryTests_08a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_08b"><text>&quot;CALIDAD_CONTINUIDAD&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_08c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_08a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_08b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_08c"><text>&quot;C2&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_08d"><text>3</text></outputEntry>
+        <outputEntry id="LiteralExpression_08e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_08f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_08g"><text>&quot;Puede dar lugar a compensación por calidad del servicio (DIU/FIU).&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_09">
+        <description>Queja o petición sobre la atención al usuario: la resuelve la Oficina de PQR sin evidencia de otro proceso.</description>
+        <inputEntry id="UnaryTests_09a"><text>&quot;QUEJA&quot;,&quot;PETICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_09b"><text>&quot;ATENCION_SERVICIO&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_09c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_09a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_09b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_09c"><text>&quot;NINGUNO&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_09d"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_09e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_09f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_09g"><text>&quot;&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_10">
+        <description>Combinación de tipo y asunto no prevista (por ejemplo, una queja sobre facturación): la tipifica el orientador.</description>
+        <inputEntry id="UnaryTests_10a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_10b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_10c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_10a"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_10b"><text>15</text></outputEntry>
+        <outputEntry id="LiteralExpression_10c"><text>&quot;NINGUNO&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_10d"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_10e"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_10f"><text>&quot;NORMAL&quot;</text></outputEntry>
+        <outputEntry id="LiteralExpression_10g"><text>&quot;Combinación de tipo y asunto no prevista: el orientador debe tipificar la PQR.&quot;</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_TipificarPQR">
+      <dmndi:DMNShape id="DMNShape_TipificarPQR" dmnElementRef="TipificarPQR">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

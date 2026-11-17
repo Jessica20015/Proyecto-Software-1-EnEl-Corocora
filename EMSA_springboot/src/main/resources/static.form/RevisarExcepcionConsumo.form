@@ -1,0 +1,162 @@
+{
+  "components": [
+    {
+      "text": "## Revisar excepción de consumo\nC4 · Facturar el servicio de energía — **Analista de facturación**.\n\nLa tabla DMN *Clasificar consumo para facturación* envió este suministro-período a revisión. Decida con evidencia: los errores originados en la medición se devuelven a C3 y no se corrigen en facturación.",
+      "type": "text",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "label": "Código de suministro",
+      "type": "textfield",
+      "id": "Field_002",
+      "key": "codigoSuministro",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Período facturable",
+      "type": "textfield",
+      "id": "Field_003",
+      "key": "periodo",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Tipo de lectura",
+      "type": "textfield",
+      "id": "Field_004",
+      "key": "tipoLectura",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Estimaciones consecutivas",
+      "type": "number",
+      "id": "Field_005",
+      "key": "estimacionesConsecutivas",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Consumo validado por C3 (kWh)",
+      "type": "number",
+      "id": "Field_006",
+      "key": "consumoKwh",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Consumo promedio histórico (kWh)",
+      "type": "number",
+      "id": "Field_007",
+      "key": "consumoPromedioKwh",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Desviación frente al promedio (%)",
+      "type": "number",
+      "id": "Field_008",
+      "key": "desviacionAbsPct",
+      "layout": {
+        "row": "Row_05",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Devoluciones previas a C3",
+      "type": "number",
+      "id": "Field_009",
+      "key": "devolucionesC3",
+      "layout": {
+        "row": "Row_05",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Motivo de la excepción (DMN)",
+      "type": "textfield",
+      "id": "Field_010",
+      "key": "motivoExcepcion",
+      "layout": {
+        "row": "Row_06",
+        "columns": null
+      },
+      "disabled": true
+    },
+    {
+      "label": "Decisión del analista",
+      "type": "radio",
+      "id": "Field_011",
+      "key": "decisionAnalista",
+      "layout": {
+        "row": "Row_07",
+        "columns": null
+      },
+      "values": [
+        {
+          "label": "Facturar con el consumo validado: la variación está justificada (p. ej., cambio de hábitos o carga nueva)",
+          "value": "FACTURAR"
+        },
+        {
+          "label": "Devolver a C3: el origen es la medición y hay que corregir o confirmar la lectura",
+          "value": "DEVOLVER_C3"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Evidencia y justificación de la decisión",
+      "type": "textarea",
+      "id": "Field_012",
+      "key": "evidenciaAnalista",
+      "layout": {
+        "row": "Row_08",
+        "columns": null
+      },
+      "validate": {
+        "required": true,
+        "minLength": 20
+      },
+      "description": "Obligatorio. Queda en el expediente de facturación como soporte ante una PQR (C7)."
+    }
+  ],
+  "type": "default",
+  "id": "RevisarExcepcionConsumo",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

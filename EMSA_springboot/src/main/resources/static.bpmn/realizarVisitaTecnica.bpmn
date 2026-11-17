@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1221xsd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:collaboration id="Collaboration_1jp4qmj">
+    <bpmn:participant id="Participant_18zv2w5" name="Cuadrilla" processRef="realizarVisitaTecnica" />
+  </bpmn:collaboration>
+  <bpmn:process id="realizarVisitaTecnica" name="Realizar visita técnica" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:startEvent id="StartEvent_1" name="se visita el domicilio">
+      <bpmn:outgoing>Flow_1jzxv7g</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="ValidarVisita" name="Validar visita" camunda:formRef="validarVisitaForm" camunda:formRefBinding="latest">
+      <bpmn:incoming>Flow_1jzxv7g</bpmn:incoming>
+      <bpmn:outgoing>Flow_0llh0m3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0ghdx83" name="¿Se realizo la visita?" default="visitaNoRealizada">
+      <bpmn:incoming>Flow_0llh0m3</bpmn:incoming>
+      <bpmn:outgoing>visitaRealizada</bpmn:outgoing>
+      <bpmn:outgoing>visitaNoRealizada</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="realizarReporteVisita" name="Realizar reporte de visita tecnica" camunda:formRef="realizarReporteVisitaTecnica" camunda:formRefBinding="latest">
+      <bpmn:incoming>visitaRealizada</bpmn:incoming>
+      <bpmn:outgoing>Flow_1p39o9e</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0iml9af" name="Reporte de visita creado">
+      <bpmn:incoming>Flow_1p39o9e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1jzxv7g" sourceRef="StartEvent_1" targetRef="ValidarVisita" />
+    <bpmn:sequenceFlow id="Flow_0llh0m3" sourceRef="ValidarVisita" targetRef="Gateway_0ghdx83" />
+    <bpmn:sequenceFlow id="visitaRealizada" name="Si" sourceRef="Gateway_0ghdx83" targetRef="realizarReporteVisita">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${visita==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="visitaNoRealizada" name="No" sourceRef="Gateway_0ghdx83" targetRef="Event_1eeg5y2" />
+    <bpmn:sequenceFlow id="Flow_1p39o9e" sourceRef="realizarReporteVisita" targetRef="Event_0iml9af" />
+    <bpmn:endEvent id="Event_1eeg5y2" name="Queja no tomada">
+      <bpmn:incoming>visitaNoRealizada</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_177z1w8" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1jp4qmj">
+      <bpmndi:BPMNShape id="Participant_18zv2w5_di" bpmnElement="Participant_18zv2w5" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="688" height="330" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="234" y="295" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13erzgc_di" bpmnElement="ValidarVisita">
+        <dc:Bounds x="330" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ghdx83_di" bpmnElement="Gateway_0ghdx83" isMarkerVisible="true">
+        <dc:Bounds x="485" y="245" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="256.5" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hxii26_di" bpmnElement="realizarReporteVisita">
+        <dc:Bounds x="570" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0iml9af_di" bpmnElement="Event_0iml9af">
+        <dc:Bounds x="712" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="689" y="205" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nqtr7i_di" bpmnElement="Event_1eeg5y2">
+        <dc:Bounds x="712" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="688" y="375" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1jzxv7g_di" bpmnElement="Flow_1jzxv7g">
+        <di:waypoint x="278" y="270" />
+        <di:waypoint x="330" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0llh0m3_di" bpmnElement="Flow_0llh0m3">
+        <di:waypoint x="430" y="270" />
+        <di:waypoint x="485" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c6462y_di" bpmnElement="visitaRealizada">
+        <di:waypoint x="510" y="245" />
+        <di:waypoint x="510" y="180" />
+        <di:waypoint x="570" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="210" width="11" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_086q4lz_di" bpmnElement="visitaNoRealizada">
+        <di:waypoint x="510" y="295" />
+        <di:waypoint x="510" y="350" />
+        <di:waypoint x="712" y="350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="522" y="323" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p39o9e_di" bpmnElement="Flow_1p39o9e">
+        <di:waypoint x="670" y="180" />
+        <di:waypoint x="712" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

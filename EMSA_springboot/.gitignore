@@ -1,0 +1,5 @@
+target/
+expediente/
+.idea/
+*.iml
+node_modules/

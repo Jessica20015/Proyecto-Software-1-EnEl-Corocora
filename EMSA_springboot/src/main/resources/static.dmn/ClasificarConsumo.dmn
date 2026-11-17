@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_ClasificarConsumo" name="C4 - Clasificar consumo para facturación" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <decision id="ClasificarConsumo" name="Clasificar consumo para facturación" camunda:historyTimeToLive="180">
+    <description>C4 · Facturar el servicio de energía. Decide si el consumo validado por C3 se factura, pasa a revisión del analista de facturación o se devuelve a C3 como excepción. Responde a los hallazgos del documento de identificación: estimaciones y desviaciones significativas son motivos recurrentes de las 10.327 reclamaciones por facturación de 2024, y el art. 149 de la Ley 142 de 1994 obliga a investigar las desviaciones significativas antes de facturar. Hit policy FIRST: las reglas se evalúan en orden y gana la primera que cumple.</description>
+    <decisionTable id="DecisionTable_ClasificarConsumo" hitPolicy="FIRST">
+      <input id="Input_esRefacturacion" label="¿Es refacturación autorizada (C6/C7)?" camunda:inputVariable="esRefacturacion">
+        <inputExpression id="InputExpression_esRefacturacion" typeRef="boolean">
+          <text>esRefacturacion</text>
+        </inputExpression>
+      </input>
+      <input id="Input_tipoLectura" label="Tipo de lectura" camunda:inputVariable="tipoLectura">
+        <inputExpression id="InputExpression_tipoLectura" typeRef="string">
+          <text>tipoLectura</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_tipoLectura">
+          <text>"REAL","ESTIMADA"</text>
+        </inputValues>
+      </input>
+      <input id="Input_estimacionesConsecutivas" label="Estimaciones consecutivas" camunda:inputVariable="estimacionesConsecutivas">
+        <inputExpression id="InputExpression_estimacionesConsecutivas" typeRef="double">
+          <text>estimacionesConsecutivas</text>
+        </inputExpression>
+      </input>
+      <input id="Input_desviacionAbsPct" label="Desviación absoluta frente al promedio (%)" camunda:inputVariable="desviacionAbsPct">
+        <inputExpression id="InputExpression_desviacionAbsPct" typeRef="double">
+          <text>desviacionAbsPct</text>
+        </inputExpression>
+      </input>
+      <input id="Input_devolucionesC3" label="Devoluciones previas a C3" camunda:inputVariable="devolucionesC3">
+        <inputExpression id="InputExpression_devolucionesC3" typeRef="double">
+          <text>devolucionesC3</text>
+        </inputExpression>
+      </input>
+      <output id="Output_decisionConsumo" label="Tratamiento del consumo" name="decisionConsumo" typeRef="string">
+        <outputValues id="UnaryTests_decisionConsumo">
+          <text>"FACTURAR","REVISAR_ANALISTA","DEVOLVER_C3"</text>
+        </outputValues>
+      </output>
+      <output id="Output_motivoExcepcion" label="Motivo" name="motivoExcepcion" typeRef="string" />
+      <rule id="Rule_01">
+        <description>La refacturación ya fue autorizada con debido proceso en C6 o C7: se factura el consumo autorizado sin volver a clasificarlo.</description>
+        <inputEntry id="UnaryTests_01a"><text>true</text></inputEntry>
+        <inputEntry id="UnaryTests_01b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_01c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_01d"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_01e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_01a"><text>"FACTURAR"</text></outputEntry>
+        <outputEntry id="LiteralExpression_01b"><text>"Refacturación autorizada por C6/C7: se liquida el consumo autorizado"</text></outputEntry>
+      </rule>
+      <rule id="Rule_02">
+        <description>C3 ya respondió una devolución y la lectura sigue siendo estimada: decide el analista con evidencia (evita ciclos infinitos con C3).</description>
+        <inputEntry id="UnaryTests_02a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_02b"><text>"ESTIMADA"</text></inputEntry>
+        <inputEntry id="UnaryTests_02c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_02d"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_02e"><text>&gt;= 1</text></inputEntry>
+        <outputEntry id="LiteralExpression_02a"><text>"REVISAR_ANALISTA"</text></outputEntry>
+        <outputEntry id="LiteralExpression_02b"><text>"C3 respondió la devolución, pero la lectura sigue estimada"</text></outputEntry>
+      </rule>
+      <rule id="Rule_03">
+        <description>C3 ya respondió una devolución y persiste una desviación relevante: decide el analista con evidencia.</description>
+        <inputEntry id="UnaryTests_03a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_03b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_03c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_03d"><text>&gt; 35</text></inputEntry>
+        <inputEntry id="UnaryTests_03e"><text>&gt;= 1</text></inputEntry>
+        <outputEntry id="LiteralExpression_03a"><text>"REVISAR_ANALISTA"</text></outputEntry>
+        <outputEntry id="LiteralExpression_03b"><text>"C3 respondió la devolución, pero persiste una desviación mayor al 35 %"</text></outputEntry>
+      </rule>
+      <rule id="Rule_04">
+        <description>Estimación reiterada: no se factura otra vez por estimación sin pedir a C3 la lectura real.</description>
+        <inputEntry id="UnaryTests_04a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_04b"><text>"ESTIMADA"</text></inputEntry>
+        <inputEntry id="UnaryTests_04c"><text>&gt;= 2</text></inputEntry>
+        <inputEntry id="UnaryTests_04d"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_04e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_04a"><text>"DEVOLVER_C3"</text></outputEntry>
+        <outputEntry id="LiteralExpression_04b"><text>"Estimación reiterada: se requiere lectura real de C3"</text></outputEntry>
+      </rule>
+      <rule id="Rule_05">
+        <description>Primera estimación: el analista confirma que procede facturar por estimación.</description>
+        <inputEntry id="UnaryTests_05a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_05b"><text>"ESTIMADA"</text></inputEntry>
+        <inputEntry id="UnaryTests_05c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_05d"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_05e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_05a"><text>"REVISAR_ANALISTA"</text></outputEntry>
+        <outputEntry id="LiteralExpression_05b"><text>"Lectura estimada: el analista confirma si procede facturar"</text></outputEntry>
+      </rule>
+      <rule id="Rule_06">
+        <description>Desviación significativa (art. 149 Ley 142): se investiga la causa con C3 antes de facturar.</description>
+        <inputEntry id="UnaryTests_06a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_06b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_06c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_06d"><text>&gt;= 100</text></inputEntry>
+        <inputEntry id="UnaryTests_06e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_06a"><text>"DEVOLVER_C3"</text></outputEntry>
+        <outputEntry id="LiteralExpression_06b"><text>"Desviación significativa (&gt;= 100 %): investigar la causa con C3 (art. 149, Ley 142)"</text></outputEntry>
+      </rule>
+      <rule id="Rule_07">
+        <description>Desviación moderada: el analista revisa antes de liquidar.</description>
+        <inputEntry id="UnaryTests_07a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_07b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_07c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_07d"><text>&gt; 35</text></inputEntry>
+        <inputEntry id="UnaryTests_07e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_07a"><text>"REVISAR_ANALISTA"</text></outputEntry>
+        <outputEntry id="LiteralExpression_07b"><text>"Desviación moderada (&gt; 35 %) frente al promedio histórico"</text></outputEntry>
+      </rule>
+      <rule id="Rule_08">
+        <description>Lectura real sin desviación relevante: se factura directamente.</description>
+        <inputEntry id="UnaryTests_08a"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_08b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_08c"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_08d"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_08e"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_08a"><text>"FACTURAR"</text></outputEntry>
+        <outputEntry id="LiteralExpression_08b"><text>"Lectura real sin desviación significativa"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_ClasificarConsumo">
+      <dmndi:DMNShape id="DMNShape_ClasificarConsumo" dmnElementRef="ClasificarConsumo">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

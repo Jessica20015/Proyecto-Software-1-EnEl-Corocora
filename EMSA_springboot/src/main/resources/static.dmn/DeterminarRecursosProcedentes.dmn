@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_DeterminarRecursosProcedentes" name="C7 - Determinar los recursos procedentes" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <decision id="DeterminarRecursosProcedentes" name="Determinar los recursos procedentes" camunda:historyTimeToLive="180">
+    <description>C7.1 · Notificar la decisión. El acto debe indicar los recursos que proceden, ante quién y en qué plazo (art. 67 CPACA). Según el art. 154 de la Ley 142 de 1994, proceden la reposición y la apelación en subsidio contra los actos de negativa del contrato, suspensión, terminación, corte y facturación; la apelación solo se interpone como subsidiaria de la reposición. Hit policy UNIQUE: las reglas no se superponen y cubren todas las combinaciones. Parametrización de referencia que G3 y S4 deben validar.</description>
+    <decisionTable id="DecisionTable_DeterminarRecursosProcedentes" hitPolicy="UNIQUE">
+      <input id="Input_instancia" label="Instancia de la decisión" camunda:inputVariable="instancia">
+        <inputExpression id="InputExpression_instancia" typeRef="string">
+          <text>instancia</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_instancia">
+          <text>&quot;PRIMERA&quot;,&quot;REPOSICION&quot;</text>
+        </inputValues>
+      </input>
+      <input id="Input_tipoPQR" label="Tipo de PQR" camunda:inputVariable="tipoPQR">
+        <inputExpression id="InputExpression_tipoPQR" typeRef="string">
+          <text>tipoPQR</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_tipoPQR">
+          <text>&quot;PETICION&quot;,&quot;QUEJA&quot;,&quot;RECLAMO&quot;,&quot;RECURSO_REPOSICION&quot;</text>
+        </inputValues>
+      </input>
+      <input id="Input_asunto" label="Asunto" camunda:inputVariable="asunto">
+        <inputExpression id="InputExpression_asunto" typeRef="string">
+          <text>asunto</text>
+        </inputExpression>
+      </input>
+      <output id="Output_procedenRecursos" label="¿Proceden recursos?" name="procedenRecursos" typeRef="boolean" />
+      <output id="Output_plazoRecursosDiasHabiles" label="Plazo para recurrir (días hábiles)" name="plazoRecursosDiasHabiles" typeRef="integer" />
+      <output id="Output_textoRecursos" label="Texto de recursos para el acto" name="textoRecursos" typeRef="string" />
+      <rule id="Rule_01">
+        <description>Decisión del recurso de reposición: no procede otro recurso ante la empresa. La apelación en subsidio, si se interpuso, la resuelve la SSPD.</description>
+        <inputEntry id="UnaryTests_01a"><text>&quot;REPOSICION&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_01b"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_01c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_01a"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_01b"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_01c"><text>&quot;Esta decisión resuelve el recurso de reposición. Si interpuso la apelación en subsidio y la decisión no le es favorable, el expediente se remite a la Superintendencia de Servicios Públicos Domiciliarios (art. 154, Ley 142 de 1994).&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_02">
+        <description>Reclamo sobre facturación, medición, suspensión, recuperación de consumos o calidad: es un acto contra el que proceden reposición y apelación en subsidio.</description>
+        <inputEntry id="UnaryTests_02a"><text>&quot;PRIMERA&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_02b"><text>&quot;RECLAMO&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_02c"><text>not(&quot;ATENCION_SERVICIO&quot;)</text></inputEntry>
+        <outputEntry id="LiteralExpression_02a"><text>true</text></outputEntry>
+        <outputEntry id="LiteralExpression_02b"><text>5</text></outputEntry>
+        <outputEntry id="LiteralExpression_02c"><text>&quot;Contra esta decisión proceden el recurso de reposición ante la empresa y, en subsidio, el de apelación ante la Superintendencia de Servicios Públicos Domiciliarios, dentro de los cinco (5) días hábiles siguientes a su notificación (arts. 154 y 159, Ley 142 de 1994).&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_03">
+        <description>Reclamo sobre la atención: no es un acto de los que enumera el art. 154.</description>
+        <inputEntry id="UnaryTests_03a"><text>&quot;PRIMERA&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_03b"><text>&quot;RECLAMO&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_03c"><text>&quot;ATENCION_SERVICIO&quot;</text></inputEntry>
+        <outputEntry id="LiteralExpression_03a"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_03b"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_03c"><text>&quot;Contra esta respuesta no proceden los recursos del art. 154 de la Ley 142. Puede presentar una nueva petición o acudir a la Superintendencia de Servicios Públicos Domiciliarios.&quot;</text></outputEntry>
+      </rule>
+      <rule id="Rule_04">
+        <description>Petición o queja: la respuesta no es un acto de negativa del contrato, suspensión, terminación, corte o facturación.</description>
+        <inputEntry id="UnaryTests_04a"><text>&quot;PRIMERA&quot;</text></inputEntry>
+        <inputEntry id="UnaryTests_04b"><text>not(&quot;RECLAMO&quot;)</text></inputEntry>
+        <inputEntry id="UnaryTests_04c"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_04a"><text>false</text></outputEntry>
+        <outputEntry id="LiteralExpression_04b"><text>0</text></outputEntry>
+        <outputEntry id="LiteralExpression_04c"><text>&quot;Contra esta respuesta no proceden los recursos del art. 154 de la Ley 142. Puede presentar una nueva petición o acudir a la Superintendencia de Servicios Públicos Domiciliarios.&quot;</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_DeterminarRecursosProcedentes">
+      <dmndi:DMNShape id="DMNShape_DeterminarRecursosProcedentes" dmnElementRef="DeterminarRecursosProcedentes">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

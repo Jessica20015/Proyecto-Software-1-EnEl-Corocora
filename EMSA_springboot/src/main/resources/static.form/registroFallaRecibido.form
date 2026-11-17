@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "label": "Nombre ",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0wlm5fb",
+        "columns": null
+      },
+      "id": "Field_0zgsvht",
+      "key": "nombre",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Direccion de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0cp2u17",
+        "columns": null
+      },
+      "id": "Field_1o71r54",
+      "key": "domicilio",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Falla presentada ",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1rqtg70",
+        "columns": null
+      },
+      "id": "Field_1jr2bvr",
+      "key": "falla",
+      "description": "Razon por la que se esta haciendo la queja",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "registroFallaRecibido",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

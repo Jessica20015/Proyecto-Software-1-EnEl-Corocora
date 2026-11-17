@@ -1,0 +1,15 @@
+camunda.bpm.admin-user:
+  id: demo
+  password: demo
+
+# ---------------------------------------------------------------------------
+# Configuración que antes se pasaba como variables de entorno a los workers JS
+# ---------------------------------------------------------------------------
+emsa:
+  # Carpeta donde se escriben los expedientes (.jsonl) y el consecutivo de radicados
+  expediente-dir: ./expediente
+  c4:
+    modo: demo            # demo | produccion  (antes C4_MODO)
+  c7:
+    modo: demo            # demo | produccion  (antes C7_MODO)
+    segundos-por-dia: 30  # en demo, cuántos segundos dura un día hábil (antes C7_SEGUNDOS_POR_DIA)

@@ -1,0 +1,90 @@
+{
+  "components": [
+    {
+      "label": "Dirección de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_wvwtpgk",
+        "columns": null
+      },
+      "id": "Field_el1xkc7",
+      "key": "domicilio",
+      "disabled": true
+    },
+    {
+      "label": "Causa de la falla",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_p0kaw56",
+        "columns": null
+      },
+      "id": "Field_yppk9e2",
+      "key": "causaFalla",
+      "disabled": true
+    },
+    {
+      "label": "Clientes afectados",
+      "type": "number",
+      "layout": {
+        "row": "Row_04dsdqs",
+        "columns": null
+      },
+      "id": "Field_c0pkzev",
+      "key": "clientesAfectados",
+      "disabled": true
+    },
+    {
+      "label": "Trabajo realizado por la cuadrilla",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_jj4dqi7",
+        "columns": null
+      },
+      "id": "Field_4bnxjx1",
+      "key": "trabajoRealizado",
+      "disabled": true
+    },
+    {
+      "label": "Suministro restablecido (reportado por la cuadrilla)",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_54ti8ri",
+        "columns": null
+      },
+      "id": "Field_ayibqup",
+      "key": "suministroRestablecido",
+      "disabled": true
+    },
+    {
+      "label": "Confirmo la restitución total del servicio",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0qziijg",
+        "columns": null
+      },
+      "id": "Field_zglb2je",
+      "key": "restitucionTotalConfirmada",
+      "defaultValue": true
+    },
+    {
+      "label": "Observaciones del coordinador",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_hsit8uz",
+        "columns": null
+      },
+      "id": "Field_5okllym",
+      "key": "observacionesCoordinador",
+      "description": "Opcional"
+    }
+  ],
+  "type": "default",
+  "id": "confirmarRestitucionForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

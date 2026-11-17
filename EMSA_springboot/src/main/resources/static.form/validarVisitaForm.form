@@ -1,0 +1,57 @@
+{
+  "components": [
+    {
+      "label": "Nombre",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_j50ce9u",
+        "columns": null
+      },
+      "id": "Field_vw53efr",
+      "key": "nombre",
+      "disabled": true
+    },
+    {
+      "label": "Dirección de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_4edt2sy",
+        "columns": null
+      },
+      "id": "Field_wb3wkh5",
+      "key": "domicilio",
+      "disabled": true
+    },
+    {
+      "label": "Falla presentada",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_dnsipzz",
+        "columns": null
+      },
+      "id": "Field_5fk2z9r",
+      "key": "falla",
+      "disabled": true
+    },
+    {
+      "label": "¿Se realizó la visita?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_i19r0wy",
+        "columns": null
+      },
+      "id": "Field_ojfljoo",
+      "key": "visita",
+      "defaultValue": true
+    }
+  ],
+  "type": "default",
+  "id": "validarVisitaForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

@@ -1,0 +1,400 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Analizar y proyectar la respuesta\nC7 · Atender una PQR del usuario — **Analista de PQR**.\n\nProyecte una decisión motivada a partir de la evidencia. Las respuestas desfavorables o parciales, las reaperturas y los recursos pasan por revisión jurídica: no se automatizan decisiones desfavorables.",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Caso",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "radicado",
+          "label": "Radicado",
+          "disabled": true,
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "instancia",
+          "label": "Instancia",
+          "disabled": true,
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "tipoPQR",
+          "label": "Tipo",
+          "disabled": true,
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "asunto",
+          "label": "Asunto",
+          "disabled": true,
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "prioridad",
+          "label": "Prioridad",
+          "disabled": true,
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "vencimientoLegible",
+          "label": "Vence el término",
+          "disabled": true,
+          "id": "Field_008",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "codigoSuministro",
+          "label": "Código de suministro",
+          "disabled": true,
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_06",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "canalRadicacion",
+          "label": "Canal",
+          "disabled": true,
+          "id": "Field_010",
+          "layout": {
+            "row": "Row_06",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "descripcionPQR",
+          "label": "Hechos y motivo",
+          "disabled": true,
+          "id": "Field_011",
+          "layout": {
+            "row": "Row_07",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "pretension",
+          "label": "Pretensión",
+          "disabled": true,
+          "id": "Field_012",
+          "layout": {
+            "row": "Row_08",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "documentosAportados",
+          "label": "Documentos aportados por el usuario",
+          "disabled": true,
+          "id": "Field_013",
+          "layout": {
+            "row": "Row_09",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "radicadoRecurrido",
+          "label": "Radicado de la decisión recurrida",
+          "disabled": true,
+          "conditional": {
+            "hide": "=instancia != \"REPOSICION\""
+          },
+          "id": "Field_014",
+          "layout": {
+            "row": "Row_10",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "radicadoAnterior",
+          "label": "Reapertura: radicado anterior por la misma causa",
+          "disabled": true,
+          "conditional": {
+            "hide": "=esReapertura != true"
+          },
+          "id": "Field_015",
+          "layout": {
+            "row": "Row_11",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "alertaProcedencia",
+          "label": "Alerta de la regla",
+          "disabled": true,
+          "conditional": {
+            "hide": "=alertaProcedencia = null or alertaProcedencia = \"\""
+          },
+          "id": "Field_016",
+          "layout": {
+            "row": "Row_12",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Evidencia",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "procesoEvidencia",
+          "label": "Proceso fuente",
+          "disabled": true,
+          "id": "Field_018",
+          "layout": {
+            "row": "Row_14",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "evidenciaOportuna",
+          "label": "La evidencia llegó dentro del plazo interno",
+          "disabled": true,
+          "id": "Field_019",
+          "layout": {
+            "row": "Row_14",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "evidenciaRecibida",
+          "label": "Evidencia del proceso fuente",
+          "disabled": true,
+          "id": "Field_020",
+          "layout": {
+            "row": "Row_15",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "observacionesRevision",
+          "label": "Observaciones de apoyo jurídico (proyecto devuelto)",
+          "disabled": true,
+          "conditional": {
+            "hide": "=resultadoRevision != \"DEVOLVER\""
+          },
+          "id": "Field_021",
+          "layout": {
+            "row": "Row_16",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_017",
+      "layout": {
+        "row": "Row_13",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Decisión proyectada",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "radio",
+          "key": "sentidoDecision",
+          "label": "Sentido de la decisión",
+          "values": [
+            {
+              "label": "Favorable: accede a lo solicitado",
+              "value": "FAVORABLE"
+            },
+            {
+              "label": "Parcialmente favorable",
+              "value": "PARCIAL"
+            },
+            {
+              "label": "Desfavorable: no accede",
+              "value": "DESFAVORABLE"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_023",
+          "layout": {
+            "row": "Row_18",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "motivacion",
+          "label": "Motivación (hechos, pruebas y normas)",
+          "validate": {
+            "required": true,
+            "minLength": 40
+          },
+          "id": "Field_024",
+          "layout": {
+            "row": "Row_19",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "ordenaAjusteC4",
+          "label": "Ordenar ajuste en facturación (C4)",
+          "id": "Field_025",
+          "layout": {
+            "row": "Row_20",
+            "columns": 8
+          }
+        },
+        {
+          "type": "number",
+          "key": "valorAjuste",
+          "label": "Valor del ajuste (COP)",
+          "decimalDigits": 0,
+          "validate": {
+            "min": 0
+          },
+          "conditional": {
+            "hide": "=ordenaAjusteC4 != true"
+          },
+          "id": "Field_026",
+          "layout": {
+            "row": "Row_20",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "solicitaRevisionC6",
+          "label": "Solicitar revisión de la actuación de recuperación (C6)",
+          "conditional": {
+            "hide": "=asunto != \"RECUPERACION_CONSUMOS\""
+          },
+          "id": "Field_027",
+          "layout": {
+            "row": "Row_21",
+            "columns": null
+          }
+        },
+        {
+          "type": "select",
+          "key": "causaRaiz",
+          "label": "Causa raíz (para G1 y G3, y para medir la reapertura por la misma causa)",
+          "values": [
+            {
+              "label": "Error de lectura o de medición",
+              "value": "ERROR_LECTURA"
+            },
+            {
+              "label": "Consumo estimado sin lectura real",
+              "value": "ESTIMACION"
+            },
+            {
+              "label": "Error de liquidación o de tarifa",
+              "value": "ERROR_LIQUIDACION"
+            },
+            {
+              "label": "Desviación significativa no investigada",
+              "value": "DESVIACION_NO_INVESTIGADA"
+            },
+            {
+              "label": "Actuación de recuperación sin soporte",
+              "value": "ACTUACION_SIN_SOPORTE"
+            },
+            {
+              "label": "Suspensión o corte indebido",
+              "value": "SUSPENSION_INDEBIDA"
+            },
+            {
+              "label": "Calidad o continuidad del servicio",
+              "value": "CALIDAD_SERVICIO"
+            },
+            {
+              "label": "Atención deficiente al usuario",
+              "value": "ATENCION_DEFICIENTE"
+            },
+            {
+              "label": "Sin falla atribuible a la empresa",
+              "value": "SIN_FALLA_EMPRESA"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_028",
+          "layout": {
+            "row": "Row_22",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_022",
+      "layout": {
+        "row": "Row_17",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "ProyectarRespuestaPQR",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

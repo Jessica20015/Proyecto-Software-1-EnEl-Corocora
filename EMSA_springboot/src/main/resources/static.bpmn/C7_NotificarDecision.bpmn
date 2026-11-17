@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_C7_NotificarDecision" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <bpmn:collaboration id="Collaboration_C7_1">
+    <bpmn:participant id="Participant_Notificacion" name="ENEL La Corocora — C7.1 · Notificar la decisión al usuario con prueba de notificación" processRef="C7_NotificarDecision">
+      <bpmn:documentation>Proceso global invocado por la Call Activity de C7. Reutilizable por cualquier proceso que deba notificar una decisión al usuario (C6, C1).</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="Participant_UsuarioNotif" name="Usuario / suscriptor" />
+    <bpmn:participant id="Participant_OperadorNotif" name="Operador de notificación con prueba de entrega (correo electrónico certificado y mensajería)" />
+    <bpmn:messageFlow id="MessageFlow_Comunicacion" name="Notificación electrónica o citación" sourceRef="Event_ComunicacionEnviada" targetRef="Participant_OperadorNotif" />
+    <bpmn:messageFlow id="MessageFlow_Acceso" name="Constancia de acceso al acto" sourceRef="Participant_OperadorNotif" targetRef="Event_AccesoElectronico" />
+    <bpmn:messageFlow id="MessageFlow_Comparecencia" name="Comparecencia del usuario" sourceRef="Participant_UsuarioNotif" targetRef="Event_UsuarioComparecio" />
+    <bpmn:messageFlow id="MessageFlow_CopiaActo" name="Copia íntegra del acto" sourceRef="Activity_NotificarPersonalmente" targetRef="Participant_UsuarioNotif" />
+    <bpmn:messageFlow id="MessageFlow_Aviso" name="Aviso con copia del acto" sourceRef="Activity_NotificarAviso" targetRef="Participant_OperadorNotif" />
+  </bpmn:collaboration>
+  <bpmn:process id="C7_NotificarDecision" name="C7.1 · Notificar la decisión al usuario con prueba de notificación" isExecutable="true" camunda:historyTimeToLive="180" camunda:versionTag="1.0" camunda:isStartableInTasklist="false">
+    <bpmn:documentation>Proceso global reutilizable. Notifica una decisión al usuario por el medio que corresponda y no termina sin prueba de notificación.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_C7_NotificarDecision">
+      <bpmn:lane id="Lane_OrientadorNotif" name="Orientador de usuarios">
+        <bpmn:flowNodeRef>Event_UsuarioComparecio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_NotificarPersonalmente</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_SistemaNotif" name="Sistema de notificación · gestor de expedientes">
+        <bpmn:flowNodeRef>StartEvent_Notificacion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_DeterminarRecursos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_GenerarActo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_ComunicacionEnviada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_EsperaNotificacion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_PlazoNotificacionVencido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_NotificarAviso</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AvisoEntregado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_PublicarAviso</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_PublicacionCumplida</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JoinAviso</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_AccesoElectronico</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JoinNotificado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_RegistrarPrueba</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Notificada</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_Notificacion" name="Notificación de la decisión solicitada">
+      <bpmn:outgoing>Flow_N01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:businessRuleTask id="Activity_DeterminarRecursos" name="Determinar los recursos procedentes" camunda:resultVariable="resultadoRecursos" camunda:decisionRef="DeterminarRecursosProcedentes" camunda:decisionRefBinding="deployment" camunda:mapDecisionResult="singleResult">
+      <bpmn:documentation>Tabla DMN DeterminarRecursosProcedentes (hit policy FIRST). El acto debe indicar los recursos que proceden, ante quién y en qué plazo (art. 67 CPACA; art. 154, Ley 142).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="procedenRecursos">${resultadoRecursos.procedenRecursos}</camunda:outputParameter>
+          <camunda:outputParameter name="plazoRecursosDiasHabiles">${resultadoRecursos.plazoRecursosDiasHabiles}</camunda:outputParameter>
+          <camunda:outputParameter name="textoRecursos">${resultadoRecursos.textoRecursos}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_N01</bpmn:incoming>
+      <bpmn:outgoing>Flow_N02</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:serviceTask id="Activity_GenerarActo" name="Generar el acto de respuesta motivado" camunda:delegateExpression="${generarActoRespuesta}">
+      <bpmn:documentation>Compone el acto con la decisión, la motivación, los recursos procedentes y sus plazos. Lo numera y lo guarda en el expediente.</bpmn:documentation>
+      <bpmn:incoming>Flow_N02</bpmn:incoming>
+      <bpmn:outgoing>Flow_N03</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_Acto">
+        <bpmn:targetRef>DataObjectReference_Acto</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:dataObject id="DataObject_Acto" />
+    <bpmn:dataObjectReference id="DataObjectReference_Acto" name="Acto de respuesta [motivado, con recursos y plazos]" dataObjectRef="DataObject_Acto" />
+    <bpmn:intermediateThrowEvent id="Event_ComunicacionEnviada" name="Notificación electrónica o citación enviada">
+      <bpmn:documentation>Si el usuario autorizó la notificación electrónica, se envía el acto por correo electrónico certificado (art. 56 CPACA). Si no, se envía la citación para la notificación personal (art. 68 CPACA).</bpmn:documentation>
+      <bpmn:incoming>Flow_N03</bpmn:incoming>
+      <bpmn:outgoing>Flow_N04</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Comunicacion" messageRef="Message_Comunicacion" camunda:delegateExpression="${enviarComunicacion}" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:eventBasedGateway id="Gateway_EsperaNotificacion" name="¿Cómo se surte la notificación?">
+      <bpmn:incoming>Flow_N04</bpmn:incoming>
+      <bpmn:outgoing>Flow_N05</bpmn:outgoing>
+      <bpmn:outgoing>Flow_N08</bpmn:outgoing>
+      <bpmn:outgoing>Flow_N16</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="Event_UsuarioComparecio" name="Usuario presentado para notificarse">
+      <bpmn:documentation>El usuario (o su apoderado) se presenta en la oficina dentro de los cinco días hábiles siguientes a la citación (mensaje MsgComparecenciaNotificacion).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable('medioNotificacionEfectivo', 'PERSONAL')}" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_N05</bpmn:incoming>
+      <bpmn:outgoing>Flow_N06</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Comparecencia" messageRef="Message_Comparecencia" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="Activity_NotificarPersonalmente" name="Notificar personalmente la decisión" camunda:formRef="NotificarPersonalmente" camunda:formRefBinding="deployment" camunda:candidateGroups="orientadores-pqr">
+      <bpmn:documentation>El orientador verifica la identidad, entrega copia íntegra del acto e informa los recursos, ante quién y en qué plazo (art. 67 CPACA).</bpmn:documentation>
+      <bpmn:incoming>Flow_N06</bpmn:incoming>
+      <bpmn:outgoing>Flow_N07</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateCatchEvent id="Event_PlazoNotificacionVencido" name="Cinco días hábiles sin notificación">
+      <bpmn:incoming>Flow_N08</bpmn:incoming>
+      <bpmn:outgoing>Flow_N09</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_PlazoNotificacion">
+        <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${fechaLimiteNotificacion}</bpmn:timeDate>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="Activity_NotificarAviso" name="Notificar por aviso con copia del acto" camunda:delegateExpression="${notificarPorAviso}">
+      <bpmn:documentation>Notificación por aviso (art. 69 CPACA) enviada por mensajería con prueba de entrega. La notificación queda surtida al finalizar el día siguiente a la entrega.</bpmn:documentation>
+      <bpmn:incoming>Flow_N09</bpmn:incoming>
+      <bpmn:outgoing>Flow_N10</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_AvisoEntregado" name="¿El aviso fue entregado?">
+      <bpmn:incoming>Flow_N10</bpmn:incoming>
+      <bpmn:outgoing>Flow_N11</bpmn:outgoing>
+      <bpmn:outgoing>Flow_N12</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_PublicarAviso" name="Publicar el aviso (web y cartelera)" camunda:delegateExpression="${publicarAviso}">
+      <bpmn:documentation>Si se desconoce la dirección o el aviso se devuelve, se publica con copia íntegra del acto durante cinco días (art. 69, inciso 2, CPACA).</bpmn:documentation>
+      <bpmn:incoming>Flow_N12</bpmn:incoming>
+      <bpmn:outgoing>Flow_N13</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Event_PublicacionCumplida" name="Publicación de cinco días cumplida">
+      <bpmn:incoming>Flow_N13</bpmn:incoming>
+      <bpmn:outgoing>Flow_N14</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_Publicacion">
+        <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${fechaFinPublicacion}</bpmn:timeDate>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_JoinAviso">
+      <bpmn:incoming>Flow_N11</bpmn:incoming>
+      <bpmn:incoming>Flow_N14</bpmn:incoming>
+      <bpmn:outgoing>Flow_N15</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="Event_AccesoElectronico" name="Acceso electrónico al acto certificado">
+      <bpmn:documentation>El operador certifica la fecha y hora en que el usuario accedió al acto (art. 56 CPACA; mensaje MsgAccesoElectronico).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable('medioNotificacionEfectivo', 'ELECTRONICA')}" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_N16</bpmn:incoming>
+      <bpmn:outgoing>Flow_N17</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Acceso" messageRef="Message_AccesoElectronico" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_JoinNotificado">
+      <bpmn:incoming>Flow_N07</bpmn:incoming>
+      <bpmn:incoming>Flow_N15</bpmn:incoming>
+      <bpmn:incoming>Flow_N17</bpmn:incoming>
+      <bpmn:outgoing>Flow_N18</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_RegistrarPrueba" name="Registrar la prueba de notificación" camunda:delegateExpression="${registrarPruebaNotificacion}">
+      <bpmn:documentation>Registra en el expediente el medio efectivo, la fecha de notificación y la prueba. Calcula si la respuesta se notificó dentro del término y la fecha límite para recurrir.</bpmn:documentation>
+      <bpmn:incoming>Flow_N18</bpmn:incoming>
+      <bpmn:outgoing>Flow_N19</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_Prueba">
+        <bpmn:targetRef>DataStoreReference_ExpedientesNotif</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_Notificada" name="Decisión notificada con prueba">
+      <bpmn:incoming>Flow_N19</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_ExpedientesNotif" name="Gestor de expedientes de PQR" dataStoreRef="DataStore_ExpedientesNotif" />
+    <bpmn:sequenceFlow id="Flow_N01" sourceRef="StartEvent_Notificacion" targetRef="Activity_DeterminarRecursos" />
+    <bpmn:sequenceFlow id="Flow_N02" sourceRef="Activity_DeterminarRecursos" targetRef="Activity_GenerarActo" />
+    <bpmn:sequenceFlow id="Flow_N03" sourceRef="Activity_GenerarActo" targetRef="Event_ComunicacionEnviada" />
+    <bpmn:sequenceFlow id="Flow_N04" sourceRef="Event_ComunicacionEnviada" targetRef="Gateway_EsperaNotificacion" />
+    <bpmn:sequenceFlow id="Flow_N05" sourceRef="Gateway_EsperaNotificacion" targetRef="Event_UsuarioComparecio" />
+    <bpmn:sequenceFlow id="Flow_N06" sourceRef="Event_UsuarioComparecio" targetRef="Activity_NotificarPersonalmente" />
+    <bpmn:sequenceFlow id="Flow_N07" sourceRef="Activity_NotificarPersonalmente" targetRef="Gateway_JoinNotificado" />
+    <bpmn:sequenceFlow id="Flow_N08" sourceRef="Gateway_EsperaNotificacion" targetRef="Event_PlazoNotificacionVencido" />
+    <bpmn:sequenceFlow id="Flow_N09" sourceRef="Event_PlazoNotificacionVencido" targetRef="Activity_NotificarAviso" />
+    <bpmn:sequenceFlow id="Flow_N10" sourceRef="Activity_NotificarAviso" targetRef="Gateway_AvisoEntregado" />
+    <bpmn:sequenceFlow id="Flow_N11" name="Sí" sourceRef="Gateway_AvisoEntregado" targetRef="Gateway_JoinAviso">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${estadoAviso == 'ENTREGADO'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_N12" name="No: devuelto" sourceRef="Gateway_AvisoEntregado" targetRef="Activity_PublicarAviso">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${estadoAviso == 'DEVUELTO'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_N13" sourceRef="Activity_PublicarAviso" targetRef="Event_PublicacionCumplida" />
+    <bpmn:sequenceFlow id="Flow_N14" sourceRef="Event_PublicacionCumplida" targetRef="Gateway_JoinAviso" />
+    <bpmn:sequenceFlow id="Flow_N15" sourceRef="Gateway_JoinAviso" targetRef="Gateway_JoinNotificado" />
+    <bpmn:sequenceFlow id="Flow_N16" sourceRef="Gateway_EsperaNotificacion" targetRef="Event_AccesoElectronico" />
+    <bpmn:sequenceFlow id="Flow_N17" sourceRef="Event_AccesoElectronico" targetRef="Gateway_JoinNotificado" />
+    <bpmn:sequenceFlow id="Flow_N18" sourceRef="Gateway_JoinNotificado" targetRef="Activity_RegistrarPrueba" />
+    <bpmn:sequenceFlow id="Flow_N19" sourceRef="Activity_RegistrarPrueba" targetRef="EndEvent_Notificada" />
+    <bpmn:textAnnotation id="TextAnnotation_Notificacion">
+      <bpmn:text>Arts. 67 a 69 del CPACA (art. 159, Ley 142): la notificación es personal o electrónica. Si no se surte en cinco días hábiles, se hace por aviso con copia íntegra del acto. Sin prueba de notificación el caso no se cierra (§10).</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_Recursos">
+      <bpmn:text>Indica los recursos que proceden, ante quién y en qué plazo (art. 67 CPACA; art. 154, Ley 142). La regla no decide el fondo del caso.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_Notificacion" associationDirection="None" sourceRef="TextAnnotation_Notificacion" targetRef="Activity_NotificarPersonalmente" />
+    <bpmn:association id="Association_Recursos" associationDirection="None" sourceRef="TextAnnotation_Recursos" targetRef="Activity_DeterminarRecursos" />
+  </bpmn:process>
+  <bpmn:message id="Message_Comunicacion" name="MsgComunicacionDecision" />
+  <bpmn:message id="Message_Comparecencia" name="MsgComparecenciaNotificacion" />
+  <bpmn:message id="Message_AccesoElectronico" name="MsgAccesoElectronico" />
+  <bpmn:dataStore id="DataStore_ExpedientesNotif" name="Gestor de expedientes de PQR" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration_C7_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_Collaboration_C7_1" bpmnElement="Collaboration_C7_1">
+      <bpmndi:BPMNShape id="Participant_Notificacion_di" bpmnElement="Participant_Notificacion" isHorizontal="true">
+        <dc:Bounds x="100" y="180" width="1740" height="600" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_UsuarioNotif_di" bpmnElement="Participant_UsuarioNotif" isHorizontal="true">
+        <dc:Bounds x="160" y="40" width="1680" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_OperadorNotif_di" bpmnElement="Participant_OperadorNotif" isHorizontal="true">
+        <dc:Bounds x="160" y="840" width="1680" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_OrientadorNotif_di" bpmnElement="Lane_OrientadorNotif" isHorizontal="true">
+        <dc:Bounds x="130" y="180" width="1710" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_SistemaNotif_di" bpmnElement="Lane_SistemaNotif" isHorizontal="true">
+        <dc:Bounds x="130" y="340" width="1710" height="440" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_Notificacion_di" bpmnElement="StartEvent_Notificacion">
+        <dc:Bounds x="202" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="175" y="483" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_DeterminarRecursos_di" bpmnElement="Activity_DeterminarRecursos">
+        <dc:Bounds x="290" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_GenerarActo_di" bpmnElement="Activity_GenerarActo">
+        <dc:Bounds x="440" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_Acto_di" bpmnElement="DataObjectReference_Acto">
+        <dc:Bounds x="472" y="575" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="445" y="630" width="90" height="70" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ComunicacionEnviada_di" bpmnElement="Event_ComunicacionEnviada">
+        <dc:Bounds x="602" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="575" y="394" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_EsperaNotificacion_di" bpmnElement="Gateway_EsperaNotificacion">
+        <dc:Bounds x="695" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="405" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_UsuarioComparecio_di" bpmnElement="Event_UsuarioComparecio">
+        <dc:Bounds x="802" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="775" y="283" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_NotificarPersonalmente_di" bpmnElement="Activity_NotificarPersonalmente">
+        <dc:Bounds x="900" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_PlazoNotificacionVencido_di" bpmnElement="Event_PlazoNotificacionVencido">
+        <dc:Bounds x="802" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="775" y="483" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_NotificarAviso_di" bpmnElement="Activity_NotificarAviso">
+        <dc:Bounds x="900" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AvisoEntregado_di" bpmnElement="Gateway_AvisoEntregado">
+        <dc:Bounds x="1065" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1045" y="401" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_PublicarAviso_di" bpmnElement="Activity_PublicarAviso">
+        <dc:Bounds x="1140" y="530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_PublicacionCumplida_di" bpmnElement="Event_PublicacionCumplida">
+        <dc:Bounds x="1282" y="552" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1255" y="593" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinAviso_di" bpmnElement="Gateway_JoinAviso">
+        <dc:Bounds x="1355" y="435" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_AccesoElectronico_di" bpmnElement="Event_AccesoElectronico">
+        <dc:Bounds x="802" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="775" y="634" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinNotificado_di" bpmnElement="Gateway_JoinNotificado">
+        <dc:Bounds x="1475" y="435" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_RegistrarPrueba_di" bpmnElement="Activity_RegistrarPrueba">
+        <dc:Bounds x="1570" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Notificada_di" bpmnElement="EndEvent_Notificada">
+        <dc:Bounds x="1722" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1695" y="483" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_ExpedientesNotif_di" bpmnElement="DataStoreReference_ExpedientesNotif">
+        <dc:Bounds x="1595" y="575" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1575" y="630" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Notificacion_di" bpmnElement="TextAnnotation_Notificacion">
+        <dc:Bounds x="1060" y="190" width="420" height="62" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Recursos_di" bpmnElement="TextAnnotation_Recursos">
+        <dc:Bounds x="200" y="560" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_N01_di" bpmnElement="Flow_N01">
+        <di:waypoint x="238" y="460" />
+        <di:waypoint x="290" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N02_di" bpmnElement="Flow_N02">
+        <di:waypoint x="390" y="460" />
+        <di:waypoint x="440" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N03_di" bpmnElement="Flow_N03">
+        <di:waypoint x="540" y="460" />
+        <di:waypoint x="602" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N04_di" bpmnElement="Flow_N04">
+        <di:waypoint x="638" y="460" />
+        <di:waypoint x="695" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N05_di" bpmnElement="Flow_N05">
+        <di:waypoint x="720" y="435" />
+        <di:waypoint x="720" y="260" />
+        <di:waypoint x="802" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N06_di" bpmnElement="Flow_N06">
+        <di:waypoint x="838" y="260" />
+        <di:waypoint x="900" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N07_di" bpmnElement="Flow_N07">
+        <di:waypoint x="1000" y="260" />
+        <di:waypoint x="1500" y="260" />
+        <di:waypoint x="1500" y="435" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N08_di" bpmnElement="Flow_N08">
+        <di:waypoint x="745" y="460" />
+        <di:waypoint x="802" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N09_di" bpmnElement="Flow_N09">
+        <di:waypoint x="838" y="460" />
+        <di:waypoint x="900" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N10_di" bpmnElement="Flow_N10">
+        <di:waypoint x="1000" y="460" />
+        <di:waypoint x="1065" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N11_di" bpmnElement="Flow_N11">
+        <di:waypoint x="1115" y="460" />
+        <di:waypoint x="1355" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1230" y="442" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N12_di" bpmnElement="Flow_N12">
+        <di:waypoint x="1090" y="485" />
+        <di:waypoint x="1090" y="570" />
+        <di:waypoint x="1140" y="570" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1022" y="520" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N13_di" bpmnElement="Flow_N13">
+        <di:waypoint x="1240" y="570" />
+        <di:waypoint x="1282" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N14_di" bpmnElement="Flow_N14">
+        <di:waypoint x="1318" y="570" />
+        <di:waypoint x="1380" y="570" />
+        <di:waypoint x="1380" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N15_di" bpmnElement="Flow_N15">
+        <di:waypoint x="1405" y="460" />
+        <di:waypoint x="1475" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N16_di" bpmnElement="Flow_N16">
+        <di:waypoint x="720" y="485" />
+        <di:waypoint x="720" y="700" />
+        <di:waypoint x="802" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N17_di" bpmnElement="Flow_N17">
+        <di:waypoint x="838" y="700" />
+        <di:waypoint x="1500" y="700" />
+        <di:waypoint x="1500" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N18_di" bpmnElement="Flow_N18">
+        <di:waypoint x="1525" y="460" />
+        <di:waypoint x="1570" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N19_di" bpmnElement="Flow_N19">
+        <di:waypoint x="1670" y="460" />
+        <di:waypoint x="1722" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_Acto_di" bpmnElement="DataOutputAssociation_Acto">
+        <di:waypoint x="490" y="500" />
+        <di:waypoint x="490" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_Prueba_di" bpmnElement="DataOutputAssociation_Prueba">
+        <di:waypoint x="1620" y="500" />
+        <di:waypoint x="1620" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Notificacion_di" bpmnElement="Association_Notificacion">
+        <di:waypoint x="1060" y="236" />
+        <di:waypoint x="1000" y="236" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_Recursos_di" bpmnElement="Association_Recursos">
+        <di:waypoint x="340" y="560" />
+        <di:waypoint x="340" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Comunicacion_di" bpmnElement="MessageFlow_Comunicacion">
+        <di:waypoint x="620" y="478" />
+        <di:waypoint x="620" y="840" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="784" width="90" height="42" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Acceso_di" bpmnElement="MessageFlow_Acceso">
+        <di:waypoint x="820" y="840" />
+        <di:waypoint x="820" y="718" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="826" y="790" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Comparecencia_di" bpmnElement="MessageFlow_Comparecencia">
+        <di:waypoint x="820" y="120" />
+        <di:waypoint x="820" y="242" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="826" y="136" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_CopiaActo_di" bpmnElement="MessageFlow_CopiaActo">
+        <di:waypoint x="950" y="220" />
+        <di:waypoint x="950" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="956" y="136" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Aviso_di" bpmnElement="MessageFlow_Aviso">
+        <di:waypoint x="950" y="500" />
+        <di:waypoint x="950" y="840" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="956" y="790" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

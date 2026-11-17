@@ -1,0 +1,60 @@
+{
+  "components": [
+    {
+      "label": "Nombre",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0tvi8aj",
+        "columns": null
+      },
+      "id": "Field_1u1sy6w",
+      "key": "nombre",
+      "disabled": true,
+      "defaultValue": "Juan"
+    },
+    {
+      "label": "Direccion de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0oveq80",
+        "columns": null
+      },
+      "id": "Field_0ynockv",
+      "key": "domicilio",
+      "disabled": true,
+      "defaultValue": "Cra 2b #11-15"
+    },
+    {
+      "label": "Falla presentada ",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1faxgwu",
+        "columns": null
+      },
+      "id": "Field_1anigkf",
+      "key": "falla",
+      "disabled": true,
+      "defaultValue": "Se corto el servivio de energía"
+    },
+    {
+      "label": "Alarma Valida",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0kn9e3i",
+        "columns": null
+      },
+      "id": "Field_1djsta3",
+      "key": "alarmaValida",
+      "defaultValue": true
+    }
+  ],
+  "type": "default",
+  "id": "validarAlarmasForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

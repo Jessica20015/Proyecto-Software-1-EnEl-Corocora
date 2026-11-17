@@ -1,0 +1,82 @@
+{
+  "components": [
+    {
+      "label": "Nombre del usuario",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_k00s4n4",
+        "columns": null
+      },
+      "id": "Field_6l67paa",
+      "key": "nombre",
+      "disabled": true
+    },
+    {
+      "label": "Dirección de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_x1ejooc",
+        "columns": null
+      },
+      "id": "Field_102cv85",
+      "key": "domicilio",
+      "disabled": true
+    },
+    {
+      "label": "Falla presentada",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_hxbjfhb",
+        "columns": null
+      },
+      "id": "Field_3k9vz5j",
+      "key": "falla",
+      "disabled": true
+    },
+    {
+      "label": "Fecha de la visita (agendada)",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_lc4pemn",
+        "columns": null
+      },
+      "id": "Field_eh949ym",
+      "key": "fechaVisita",
+      "disabled": true
+    },
+    {
+      "label": "Franja horaria (agendada)",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_vj80sx2",
+        "columns": null
+      },
+      "id": "Field_6yu5yrb",
+      "key": "franjaHorario",
+      "disabled": true
+    },
+    {
+      "label": "Cuadrilla asignada",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_fk5a5e9",
+        "columns": null
+      },
+      "id": "Field_7ou9hlk",
+      "key": "cuadrillaAsignada",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "2"
+    }
+  ],
+  "type": "default",
+  "id": "despacharCuadrillaForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

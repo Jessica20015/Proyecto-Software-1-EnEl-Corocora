@@ -1,0 +1,150 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Notificar personalmente la decisión\nC7.1 · Notificar la decisión — **Orientador de usuarios**.\n\nEl usuario se presentó a notificarse. Entregue copia íntegra, auténtica y gratuita del acto e informe los recursos que proceden, ante quién y en qué plazo (art. 67 CPACA).",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Acto que se notifica",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "radicado",
+          "label": "Radicado",
+          "disabled": true,
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "numeroActo",
+          "label": "Número del acto",
+          "disabled": true,
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "sentidoDecision",
+          "label": "Sentido",
+          "disabled": true,
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "nombrePeticionario",
+          "label": "Peticionario",
+          "disabled": true,
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "textoRecursos",
+          "label": "Recursos que proceden",
+          "disabled": true,
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Diligencia de notificación",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "identidadVerificada",
+          "label": "Se verificó la identidad del usuario o de su apoderado",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_07",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "copiaEntregada",
+          "label": "Se entregó copia íntegra, auténtica y gratuita del acto",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010",
+          "layout": {
+            "row": "Row_08",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "recursosInformados",
+          "label": "Se informaron los recursos, ante quién y en qué plazo",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011",
+          "layout": {
+            "row": "Row_09",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "observacionesNotificacion",
+          "label": "Observaciones de la diligencia",
+          "id": "Field_012",
+          "layout": {
+            "row": "Row_10",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_008",
+      "layout": {
+        "row": "Row_06",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "NotificarPersonalmente",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

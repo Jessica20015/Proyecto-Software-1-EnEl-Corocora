@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_DeterminarTarifaAplicable" name="C4 - Determinar tarifa aplicable" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <decision id="DeterminarTarifaAplicable" name="Determinar tarifa aplicable" camunda:historyTimeToLive="180">
+    <description>C4 · Facturar el servicio de energía. Regla tarifaria versionada (interfaz con G3): determina el factor de subsidio (negativo) o de contribución (positivo) que se aplica al costo unitario (CU) según el uso del servicio y el estrato. El subsidio de los estratos 1 a 3 solo cubre el consumo de subsistencia (173 kWh/mes para municipios por debajo de 1.000 m s. n. m., como Villavicencio). Los valores son una parametrización académica y G3 debe validarlos contra la normativa vigente antes de usarlos (regla 8.4 del documento: "La normativa vigente se valida antes de parametrizar"). Hit policy UNIQUE: las reglas no se superponen.</description>
+    <decisionTable id="DecisionTable_DeterminarTarifaAplicable" hitPolicy="UNIQUE">
+      <input id="Input_usoServicio" label="Uso del servicio" camunda:inputVariable="usoServicio">
+        <inputExpression id="InputExpression_usoServicio" typeRef="string">
+          <text>usoServicio</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_usoServicio">
+          <text>"RESIDENCIAL","COMERCIAL","INDUSTRIAL","OFICIAL"</text>
+        </inputValues>
+      </input>
+      <input id="Input_estrato" label="Estrato socioeconómico" camunda:inputVariable="estrato">
+        <inputExpression id="InputExpression_estrato" typeRef="double">
+          <text>estrato</text>
+        </inputExpression>
+      </input>
+      <output id="Output_factor" label="Factor subsidio (-) / contribución (+)" name="factorSubsidioContribucion" typeRef="double" />
+      <output id="Output_tipoAjuste" label="Tipo de ajuste" name="tipoAjusteTarifario" typeRef="string">
+        <outputValues id="UnaryTests_tipoAjuste">
+          <text>"SUBSIDIO","NEUTRO","CONTRIBUCION"</text>
+        </outputValues>
+      </output>
+      <output id="Output_subsistencia" label="Consumo de subsistencia (kWh)" name="consumoSubsistenciaKwh" typeRef="double" />
+      <rule id="Rule_T01">
+        <description>Residencial estrato 1: subsidio de hasta el 60 % sobre el consumo de subsistencia.</description>
+        <inputEntry id="UT_T01a"><text>"RESIDENCIAL"</text></inputEntry>
+        <inputEntry id="UT_T01b"><text>1</text></inputEntry>
+        <outputEntry id="LE_T01a"><text>-0.60</text></outputEntry>
+        <outputEntry id="LE_T01b"><text>"SUBSIDIO"</text></outputEntry>
+        <outputEntry id="LE_T01c"><text>173</text></outputEntry>
+      </rule>
+      <rule id="Rule_T02">
+        <description>Residencial estrato 2: subsidio de hasta el 50 % sobre el consumo de subsistencia.</description>
+        <inputEntry id="UT_T02a"><text>"RESIDENCIAL"</text></inputEntry>
+        <inputEntry id="UT_T02b"><text>2</text></inputEntry>
+        <outputEntry id="LE_T02a"><text>-0.50</text></outputEntry>
+        <outputEntry id="LE_T02b"><text>"SUBSIDIO"</text></outputEntry>
+        <outputEntry id="LE_T02c"><text>173</text></outputEntry>
+      </rule>
+      <rule id="Rule_T03">
+        <description>Residencial estrato 3: subsidio de hasta el 15 % sobre el consumo de subsistencia.</description>
+        <inputEntry id="UT_T03a"><text>"RESIDENCIAL"</text></inputEntry>
+        <inputEntry id="UT_T03b"><text>3</text></inputEntry>
+        <outputEntry id="LE_T03a"><text>-0.15</text></outputEntry>
+        <outputEntry id="LE_T03b"><text>"SUBSIDIO"</text></outputEntry>
+        <outputEntry id="LE_T03c"><text>173</text></outputEntry>
+      </rule>
+      <rule id="Rule_T04">
+        <description>Residencial estrato 4: paga el costo unitario, sin subsidio ni contribución.</description>
+        <inputEntry id="UT_T04a"><text>"RESIDENCIAL"</text></inputEntry>
+        <inputEntry id="UT_T04b"><text>4</text></inputEntry>
+        <outputEntry id="LE_T04a"><text>0</text></outputEntry>
+        <outputEntry id="LE_T04b"><text>"NEUTRO"</text></outputEntry>
+        <outputEntry id="LE_T04c"><text>173</text></outputEntry>
+      </rule>
+      <rule id="Rule_T05">
+        <description>Residencial estratos 5 y 6: contribución de solidaridad del 20 %.</description>
+        <inputEntry id="UT_T05a"><text>"RESIDENCIAL"</text></inputEntry>
+        <inputEntry id="UT_T05b"><text>[5..6]</text></inputEntry>
+        <outputEntry id="LE_T05a"><text>0.20</text></outputEntry>
+        <outputEntry id="LE_T05b"><text>"CONTRIBUCION"</text></outputEntry>
+        <outputEntry id="LE_T05c"><text>173</text></outputEntry>
+      </rule>
+      <rule id="Rule_T06">
+        <description>Uso comercial: contribución de solidaridad del 20 %.</description>
+        <inputEntry id="UT_T06a"><text>"COMERCIAL"</text></inputEntry>
+        <inputEntry id="UT_T06b"><text></text></inputEntry>
+        <outputEntry id="LE_T06a"><text>0.20</text></outputEntry>
+        <outputEntry id="LE_T06b"><text>"CONTRIBUCION"</text></outputEntry>
+        <outputEntry id="LE_T06c"><text>0</text></outputEntry>
+      </rule>
+      <rule id="Rule_T07">
+        <description>Uso industrial: contribución de solidaridad del 20 % (exenciones especiales fuera del alcance del piloto).</description>
+        <inputEntry id="UT_T07a"><text>"INDUSTRIAL"</text></inputEntry>
+        <inputEntry id="UT_T07b"><text></text></inputEntry>
+        <outputEntry id="LE_T07a"><text>0.20</text></outputEntry>
+        <outputEntry id="LE_T07b"><text>"CONTRIBUCION"</text></outputEntry>
+        <outputEntry id="LE_T07c"><text>0</text></outputEntry>
+      </rule>
+      <rule id="Rule_T08">
+        <description>Uso oficial: paga el costo unitario.</description>
+        <inputEntry id="UT_T08a"><text>"OFICIAL"</text></inputEntry>
+        <inputEntry id="UT_T08b"><text></text></inputEntry>
+        <outputEntry id="LE_T08a"><text>0</text></outputEntry>
+        <outputEntry id="LE_T08b"><text>"NEUTRO"</text></outputEntry>
+        <outputEntry id="LE_T08c"><text>0</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_DeterminarTarifaAplicable">
+      <dmndi:DMNShape id="DMNShape_DeterminarTarifaAplicable" dmnElementRef="DeterminarTarifaAplicable">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

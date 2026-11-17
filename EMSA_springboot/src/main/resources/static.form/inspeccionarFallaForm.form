@@ -1,0 +1,69 @@
+{
+  "components": [
+    {
+      "label": "Nivel de daño",
+      "values": [
+        {
+          "label": "Leve",
+          "value": "Leve"
+        },
+        {
+          "label": "Moderado",
+          "value": "Moderado"
+        },
+        {
+          "label": "Severo",
+          "value": "Severo"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_khvdgaj",
+        "columns": null
+      },
+      "id": "Field_8gxbeny",
+      "key": "nivelDano",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "Moderado"
+    },
+    {
+      "label": "Causa de la falla",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_jqwx4hh",
+        "columns": null
+      },
+      "id": "Field_5344tfj",
+      "key": "causaFalla",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "La lluvia"
+    },
+    {
+      "label": "Clientes afectados",
+      "type": "number",
+      "layout": {
+        "row": "Row_gvq4k7b",
+        "columns": null
+      },
+      "id": "Field_n7xj8b7",
+      "key": "clientesAfectados",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": 2
+    }
+  ],
+  "type": "default",
+  "id": "inspeccionarFallaForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

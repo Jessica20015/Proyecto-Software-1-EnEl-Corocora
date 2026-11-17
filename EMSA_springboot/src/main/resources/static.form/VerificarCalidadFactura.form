@@ -1,0 +1,224 @@
+{
+  "components": [
+    {
+      "text": "## Verificar calidad de la factura\nC4 · Facturar el servicio de energía — **Control de calidad de facturación**.\n\nVerifique la liquidación antes de emitirla. Objetivo del proceso: una factura *correcta a la primera* y trazable hasta la lectura y la versión de la regla tarifaria.",
+      "type": "text",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "label": "Código de suministro",
+      "type": "textfield",
+      "id": "Field_002",
+      "key": "codigoSuministro",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Período facturable",
+      "type": "textfield",
+      "id": "Field_003",
+      "key": "periodo",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Consumo facturable (kWh)",
+      "type": "number",
+      "id": "Field_004",
+      "key": "consumoFacturableKwh",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Factura provisional por consumo promedio (art. 149, Ley 142)",
+      "type": "checkbox",
+      "id": "Field_005",
+      "key": "facturaProvisional",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Uso del servicio",
+      "type": "textfield",
+      "id": "Field_006",
+      "key": "usoServicio",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Estrato",
+      "type": "number",
+      "id": "Field_007",
+      "key": "estrato",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Versión de la regla tarifaria (G3)",
+      "type": "textfield",
+      "id": "Field_008",
+      "key": "versionRegla",
+      "layout": {
+        "row": "Row_05",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Costo unitario CU (COP/kWh)",
+      "type": "number",
+      "id": "Field_009",
+      "key": "cuKwh",
+      "layout": {
+        "row": "Row_05",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Factor subsidio (-) / contribución (+)",
+      "type": "number",
+      "id": "Field_010",
+      "key": "factorSubsidioContribucion",
+      "layout": {
+        "row": "Row_06",
+        "columns": 8
+      },
+      "decimalDigits": 2,
+      "disabled": true
+    },
+    {
+      "label": "Valor del consumo (COP)",
+      "type": "number",
+      "id": "Field_011",
+      "key": "valorEnergia",
+      "layout": {
+        "row": "Row_06",
+        "columns": 8
+      },
+      "decimalDigits": 0,
+      "disabled": true
+    },
+    {
+      "label": "Subsidio (-) / contribución (+) (COP)",
+      "type": "number",
+      "id": "Field_012",
+      "key": "valorAjusteTarifario",
+      "layout": {
+        "row": "Row_07",
+        "columns": 8
+      },
+      "decimalDigits": 0,
+      "disabled": true
+    },
+    {
+      "label": "Valor total a facturar (COP)",
+      "type": "number",
+      "id": "Field_013",
+      "key": "valorTotal",
+      "layout": {
+        "row": "Row_07",
+        "columns": 8
+      },
+      "decimalDigits": 0,
+      "disabled": true
+    },
+    {
+      "label": "Resultado de la verificación",
+      "type": "radio",
+      "id": "Field_014",
+      "key": "resultadoVerificacion",
+      "layout": {
+        "row": "Row_08",
+        "columns": null
+      },
+      "values": [
+        {
+          "label": "Aprobada: emitir la factura",
+          "value": "APROBADA"
+        },
+        {
+          "label": "Corregir la liquidación antes de emitir",
+          "value": "CORREGIR"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Motivo de la corrección",
+      "type": "select",
+      "id": "Field_015",
+      "key": "motivoCorreccion",
+      "layout": {
+        "row": "Row_09",
+        "columns": null
+      },
+      "values": [
+        {
+          "label": "Error de cálculo en la liquidación",
+          "value": "ERROR_LIQUIDACION"
+        },
+        {
+          "label": "Datos del suministro errados (estrato o uso)",
+          "value": "ERROR_DATOS_SUMINISTRO"
+        },
+        {
+          "label": "Versión de la regla tarifaria mal aplicada",
+          "value": "ERROR_REGLA_TARIFARIA"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "description": "Se registra para el indicador 'factura correcta a la primera'. Los errores de medición no se corrigen aquí: se gestionan con C3.",
+      "conditional": {
+        "hide": "=resultadoVerificacion != \"CORREGIR\""
+      }
+    },
+    {
+      "label": "Observaciones de calidad",
+      "type": "textarea",
+      "id": "Field_016",
+      "key": "observacionCalidad",
+      "layout": {
+        "row": "Row_10",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "VerificarCalidadFactura",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

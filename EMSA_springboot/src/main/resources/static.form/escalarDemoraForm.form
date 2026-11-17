@@ -1,0 +1,60 @@
+{
+  "components": [
+    {
+      "label": "Dirección de la falla",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_kor487l",
+        "columns": null
+      },
+      "id": "Field_6u742se",
+      "key": "domicilio",
+      "disabled": true
+    },
+    {
+      "label": "Causa de la falla",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_t0t75d1",
+        "columns": null
+      },
+      "id": "Field_ru9phdu",
+      "key": "causaFalla",
+      "disabled": true
+    },
+    {
+      "label": "Clientes afectados",
+      "type": "number",
+      "layout": {
+        "row": "Row_snexhup",
+        "columns": null
+      },
+      "id": "Field_6ruaw7t",
+      "key": "clientesAfectados",
+      "disabled": true
+    },
+    {
+      "label": "Acción de escalamiento tomada",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_9zylhcx",
+        "columns": null
+      },
+      "id": "Field_9hejfhu",
+      "key": "accionEscalamiento",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "Monitoreo de reestablecimiento"
+    }
+  ],
+  "type": "default",
+  "id": "escalarDemoraForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

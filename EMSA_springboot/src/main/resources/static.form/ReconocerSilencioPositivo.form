@@ -1,0 +1,243 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Reconocer los efectos del silencio administrativo positivo\nC7 · Atender una PQR del usuario — **Analista de PQR**.\n\nEl término legal venció sin una decisión (art. 158, Ley 142 de 1994). La PQR se entiende resuelta **a favor del usuario**: registre los efectos que la empresa reconoce. El sentido favorable lo fija la ley y no se discute.",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Caso",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "radicado",
+          "label": "Radicado",
+          "disabled": true,
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "instancia",
+          "label": "Instancia",
+          "disabled": true,
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "tipoPQR",
+          "label": "Tipo",
+          "disabled": true,
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "asunto",
+          "label": "Asunto",
+          "disabled": true,
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "radicacionLegible",
+          "label": "Radicada el",
+          "disabled": true,
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "vencimientoLegible",
+          "label": "Venció el",
+          "disabled": true,
+          "id": "Field_008",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "codigoSuministro",
+          "label": "Código de suministro",
+          "disabled": true,
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_06",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "pretension",
+          "label": "Pretensión que se entiende concedida",
+          "disabled": true,
+          "id": "Field_010",
+          "layout": {
+            "row": "Row_07",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Efectos reconocidos",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textarea",
+          "key": "motivacion",
+          "label": "Efectos que se reconocen",
+          "validate": {
+            "required": true,
+            "minLength": 20
+          },
+          "id": "Field_012",
+          "layout": {
+            "row": "Row_09",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "ordenaAjusteC4",
+          "label": "Ordenar ajuste en facturación (C4)",
+          "id": "Field_013",
+          "layout": {
+            "row": "Row_10",
+            "columns": 8
+          }
+        },
+        {
+          "type": "number",
+          "key": "valorAjuste",
+          "label": "Valor del ajuste (COP)",
+          "decimalDigits": 0,
+          "validate": {
+            "min": 0
+          },
+          "conditional": {
+            "hide": "=ordenaAjusteC4 != true"
+          },
+          "id": "Field_014",
+          "layout": {
+            "row": "Row_10",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "solicitaRevisionC6",
+          "label": "Solicitar revisión de la actuación de recuperación (C6)",
+          "conditional": {
+            "hide": "=asunto != \"RECUPERACION_CONSUMOS\""
+          },
+          "id": "Field_015",
+          "layout": {
+            "row": "Row_11",
+            "columns": null
+          }
+        },
+        {
+          "type": "select",
+          "key": "causaRaiz",
+          "label": "Causa raíz",
+          "values": [
+            {
+              "label": "Vencimiento del término sin respuesta",
+              "value": "VENCIMIENTO_TERMINO"
+            },
+            {
+              "label": "Error de lectura o de medición",
+              "value": "ERROR_LECTURA"
+            },
+            {
+              "label": "Consumo estimado sin lectura real",
+              "value": "ESTIMACION"
+            },
+            {
+              "label": "Error de liquidación o de tarifa",
+              "value": "ERROR_LIQUIDACION"
+            },
+            {
+              "label": "Desviación significativa no investigada",
+              "value": "DESVIACION_NO_INVESTIGADA"
+            },
+            {
+              "label": "Actuación de recuperación sin soporte",
+              "value": "ACTUACION_SIN_SOPORTE"
+            },
+            {
+              "label": "Suspensión o corte indebido",
+              "value": "SUSPENSION_INDEBIDA"
+            },
+            {
+              "label": "Calidad o continuidad del servicio",
+              "value": "CALIDAD_SERVICIO"
+            },
+            {
+              "label": "Atención deficiente al usuario",
+              "value": "ATENCION_DEFICIENTE"
+            },
+            {
+              "label": "Sin falla atribuible a la empresa",
+              "value": "SIN_FALLA_EMPRESA"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_016",
+          "layout": {
+            "row": "Row_12",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_011",
+      "layout": {
+        "row": "Row_08",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "ReconocerSilencioPositivo",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

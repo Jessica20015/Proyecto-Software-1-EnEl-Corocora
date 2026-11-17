@@ -1,0 +1,151 @@
+{
+  "components": [
+    {
+      "text": "## Corregir liquidación\nC4 · Facturar el servicio de energía — **Liquidador tarifario**.\n\nCorrija los datos tarifarios que señaló control de calidad. La factura se vuelve a liquidar con la tabla DMN *Determinar tarifa aplicable* y pasa otra vez por verificación.",
+      "type": "text",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "label": "Código de suministro",
+      "type": "textfield",
+      "id": "Field_002",
+      "key": "codigoSuministro",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Período facturable",
+      "type": "textfield",
+      "id": "Field_003",
+      "key": "periodo",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Motivo señalado por control de calidad",
+      "type": "textfield",
+      "id": "Field_004",
+      "key": "motivoCorreccion",
+      "layout": {
+        "row": "Row_05",
+        "columns": null
+      },
+      "disabled": true
+    },
+    {
+      "label": "Observaciones de control de calidad",
+      "type": "textarea",
+      "id": "Field_005",
+      "key": "observacionCalidad",
+      "layout": {
+        "row": "Row_06",
+        "columns": null
+      },
+      "disabled": true
+    },
+    {
+      "label": "Uso del servicio",
+      "values": [
+        {
+          "label": "Residencial",
+          "value": "RESIDENCIAL"
+        },
+        {
+          "label": "Comercial",
+          "value": "COMERCIAL"
+        },
+        {
+          "label": "Industrial",
+          "value": "INDUSTRIAL"
+        },
+        {
+          "label": "Oficial",
+          "value": "OFICIAL"
+        }
+      ],
+      "type": "select",
+      "id": "Field_006",
+      "key": "usoServicio",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "RESIDENCIAL"
+    },
+    {
+      "label": "Estrato",
+      "type": "number",
+      "id": "Field_007",
+      "key": "estrato",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "validate": {
+        "required": true,
+        "min": 1,
+        "max": 6
+      },
+      "defaultValue": 2
+    },
+    {
+      "label": "Versión de la regla tarifaria aplicada",
+      "type": "textfield",
+      "id": "Field_008",
+      "key": "versionRegla",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Correcciones previas a la emisión",
+      "type": "number",
+      "id": "Field_009",
+      "key": "correccionesPreEmision",
+      "layout": {
+        "row": "Row_04",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Descripción de la corrección realizada",
+      "type": "textarea",
+      "id": "Field_010",
+      "key": "descripcionCorreccion",
+      "layout": {
+        "row": "Row_07",
+        "columns": null
+      },
+      "validate": {
+        "required": true,
+        "minLength": 15
+      },
+      "description": "Obligatorio. Deja la trazabilidad de qué cambió y por qué."
+    }
+  ],
+  "type": "default",
+  "id": "CorregirLiquidacion",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "schemaVersion": 19
+}

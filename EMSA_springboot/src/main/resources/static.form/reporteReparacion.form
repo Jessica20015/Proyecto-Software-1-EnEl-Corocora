@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "label": "Trabajo realizado",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_tfq7xkw",
+        "columns": null
+      },
+      "id": "Field_o886vom",
+      "key": "trabajoRealizado",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "se reparo el transformador"
+    },
+    {
+      "label": "Suministro restablecido",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_pzom75w",
+        "columns": null
+      },
+      "id": "Field_bbr4qmw",
+      "key": "suministroRestablecido",
+      "defaultValue": true
+    }
+  ],
+  "type": "default",
+  "id": "reporteReparacion",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.39.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 19
+}

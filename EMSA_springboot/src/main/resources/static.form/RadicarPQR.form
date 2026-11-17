@@ -1,0 +1,394 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Radicar PQR\nC7 · Atender una PQR del usuario — **Orientador y enrutador de usuarios** (canales presencial y telefónico).\n\nRadicación integral: por cualquier canal se radica cualquier petición, queja, reclamo o recurso, no solo el reporte de daños. Al completar el formulario, el sistema asigna el número de radicado y envía la constancia al usuario.",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Canal y tipo de PQR",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "radio",
+          "key": "canalRadicacion",
+          "label": "Canal de radicación",
+          "values": [
+            {
+              "label": "Presencial (ventanilla)",
+              "value": "PRESENCIAL"
+            },
+            {
+              "label": "Telefónico",
+              "value": "TELEFONICO"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": null
+          }
+        },
+        {
+          "type": "select",
+          "key": "tipoPQR",
+          "label": "Tipo de PQR",
+          "values": [
+            {
+              "label": "Petición",
+              "value": "PETICION"
+            },
+            {
+              "label": "Queja",
+              "value": "QUEJA"
+            },
+            {
+              "label": "Reclamo",
+              "value": "RECLAMO"
+            },
+            {
+              "label": "Recurso de reposición contra un acto de la empresa",
+              "value": "RECURSO_REPOSICION"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "select",
+          "key": "asunto",
+          "label": "Asunto",
+          "values": [
+            {
+              "label": "Facturación",
+              "value": "FACTURACION"
+            },
+            {
+              "label": "Medición del consumo",
+              "value": "MEDICION"
+            },
+            {
+              "label": "Suspensión, corte o reconexión",
+              "value": "SUSPENSION_RECONEXION"
+            },
+            {
+              "label": "Recuperación de consumos",
+              "value": "RECUPERACION_CONSUMOS"
+            },
+            {
+              "label": "Calidad y continuidad del servicio",
+              "value": "CALIDAD_CONTINUIDAD"
+            },
+            {
+              "label": "Atención al usuario",
+              "value": "ATENCION_SERVICIO"
+            },
+            {
+              "label": "Otro (lo tipifica el orientador)",
+              "value": "OTRO"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "actoRecurrido",
+          "label": "Acto o decisión que se recurre",
+          "description": "Número del acto de C5, C6 o C7 contra el que se presenta el recurso.",
+          "conditional": {
+            "hide": "=tipoPQR != \"RECURSO_REPOSICION\""
+          },
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "apelacionSubsidiaria",
+          "label": "Interpone la apelación en subsidio ante la SSPD",
+          "conditional": {
+            "hide": "=tipoPQR != \"RECURSO_REPOSICION\""
+          },
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": 8
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Suministro y peticionario",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "codigoSuministro",
+          "label": "Código de suministro",
+          "description": "Formato SUM-000000.",
+          "validate": {
+            "required": true,
+            "pattern": "^SUM-[0-9]{6}$"
+          },
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_07",
+            "columns": 8
+          }
+        },
+        {
+          "type": "select",
+          "key": "calidadPeticionario",
+          "label": "Calidad del peticionario",
+          "values": [
+            {
+              "label": "Suscriptor",
+              "value": "SUSCRIPTOR"
+            },
+            {
+              "label": "Usuario",
+              "value": "USUARIO"
+            },
+            {
+              "label": "Tercero autorizado",
+              "value": "TERCERO_AUTORIZADO"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010",
+          "layout": {
+            "row": "Row_07",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "nombrePeticionario",
+          "label": "Nombre del peticionario",
+          "validate": {
+            "required": true,
+            "minLength": 3
+          },
+          "id": "Field_011",
+          "layout": {
+            "row": "Row_08",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_008",
+      "layout": {
+        "row": "Row_06",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Contenido de la PQR",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textarea",
+          "key": "descripcionPQR",
+          "label": "Hechos y motivo",
+          "validate": {
+            "required": true,
+            "minLength": 20
+          },
+          "id": "Field_013",
+          "layout": {
+            "row": "Row_10",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "pretension",
+          "label": "¿Qué solicita el usuario?",
+          "validate": {
+            "required": true,
+            "minLength": 10
+          },
+          "id": "Field_014",
+          "layout": {
+            "row": "Row_11",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "numeroFactura",
+          "label": "Número de la factura reclamada",
+          "conditional": {
+            "hide": "=asunto != \"FACTURACION\" and asunto != \"RECUPERACION_CONSUMOS\""
+          },
+          "id": "Field_015",
+          "layout": {
+            "row": "Row_12",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "fechaExpedicionFactura",
+          "label": "Fecha de expedición de la factura",
+          "description": "Formato AAAA-MM-DD. Sirve para aplicar el plazo de cinco meses del art. 154.",
+          "validate": {
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+          },
+          "conditional": {
+            "hide": "=asunto != \"FACTURACION\" and asunto != \"RECUPERACION_CONSUMOS\""
+          },
+          "id": "Field_016",
+          "layout": {
+            "row": "Row_12",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "documentosAportados",
+          "label": "Documentos y pruebas aportados",
+          "description": "Relacione los documentos recibidos. Se anexan al expediente único.",
+          "id": "Field_017",
+          "layout": {
+            "row": "Row_13",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_012",
+      "layout": {
+        "row": "Row_09",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Notificación y accesibilidad",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "autorizaNotificacionElectronica",
+          "label": "El usuario autoriza la notificación electrónica (art. 56 CPACA)",
+          "id": "Field_019",
+          "layout": {
+            "row": "Row_15",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "correoNotificacion",
+          "label": "Correo electrónico para notificaciones",
+          "validate": {
+            "validationType": "email"
+          },
+          "conditional": {
+            "hide": "=autorizaNotificacionElectronica != true"
+          },
+          "id": "Field_020",
+          "layout": {
+            "row": "Row_16",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "direccionNotificacion",
+          "label": "Dirección para notificaciones",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_021",
+          "layout": {
+            "row": "Row_17",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "requiereAccesibilidad",
+          "label": "El usuario requiere ajustes de accesibilidad",
+          "id": "Field_022",
+          "layout": {
+            "row": "Row_18",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "ajusteAccesibilidad",
+          "label": "Ajuste requerido",
+          "conditional": {
+            "hide": "=requiereAccesibilidad != true"
+          },
+          "id": "Field_023",
+          "layout": {
+            "row": "Row_18",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "autorizaTratamientoDatos",
+          "label": "Autoriza el tratamiento de sus datos personales solo para este trámite (Ley 1581 de 2012)",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_024",
+          "layout": {
+            "row": "Row_19",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_018",
+      "layout": {
+        "row": "Row_14",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "RadicarPQR",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

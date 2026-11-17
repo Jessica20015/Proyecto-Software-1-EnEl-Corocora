@@ -1,0 +1,289 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "## Revisar el debido proceso del proyecto\nC7 · Atender una PQR del usuario — **Apoyo jurídico de PQR**.\n\nRevise el proyecto antes de que se emita. Ninguna decisión desfavorable sale sin esta revisión (§10). Si lo devuelve, el analista recibe sus observaciones.",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Caso",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "radicado",
+          "label": "Radicado",
+          "disabled": true,
+          "id": "Field_003",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "instancia",
+          "label": "Instancia",
+          "disabled": true,
+          "id": "Field_004",
+          "layout": {
+            "row": "Row_03",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "tipoPQR",
+          "label": "Tipo",
+          "disabled": true,
+          "id": "Field_005",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "asunto",
+          "label": "Asunto",
+          "disabled": true,
+          "id": "Field_006",
+          "layout": {
+            "row": "Row_04",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "alertaProcedencia",
+          "label": "Alerta de la regla",
+          "disabled": true,
+          "conditional": {
+            "hide": "=alertaProcedencia = null or alertaProcedencia = \"\""
+          },
+          "id": "Field_007",
+          "layout": {
+            "row": "Row_05",
+            "columns": null
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "radicadoAnterior",
+          "label": "Reapertura: radicado anterior",
+          "disabled": true,
+          "conditional": {
+            "hide": "=esReapertura != true"
+          },
+          "id": "Field_008",
+          "layout": {
+            "row": "Row_06",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "pretension",
+          "label": "Pretensión del usuario",
+          "disabled": true,
+          "id": "Field_009",
+          "layout": {
+            "row": "Row_07",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "evidenciaRecibida",
+          "label": "Evidencia del proceso fuente",
+          "disabled": true,
+          "id": "Field_010",
+          "layout": {
+            "row": "Row_08",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_002",
+      "layout": {
+        "row": "Row_02",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Proyecto de respuesta",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "textfield",
+          "key": "sentidoDecision",
+          "label": "Sentido",
+          "disabled": true,
+          "id": "Field_012",
+          "layout": {
+            "row": "Row_10",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "causaRaiz",
+          "label": "Causa raíz",
+          "disabled": true,
+          "id": "Field_013",
+          "layout": {
+            "row": "Row_10",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "motivacion",
+          "label": "Motivación",
+          "disabled": true,
+          "id": "Field_014",
+          "layout": {
+            "row": "Row_11",
+            "columns": null
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "ordenaAjusteC4",
+          "label": "Ordena ajuste en facturación (C4)",
+          "disabled": true,
+          "id": "Field_015",
+          "layout": {
+            "row": "Row_12",
+            "columns": 8
+          }
+        },
+        {
+          "type": "textfield",
+          "key": "valorAjuste",
+          "label": "Valor del ajuste (COP)",
+          "disabled": true,
+          "conditional": {
+            "hide": "=ordenaAjusteC4 != true"
+          },
+          "id": "Field_016",
+          "layout": {
+            "row": "Row_12",
+            "columns": 8
+          }
+        },
+        {
+          "type": "checkbox",
+          "key": "solicitaRevisionC6",
+          "label": "Solicita revisión de la actuación (C6)",
+          "disabled": true,
+          "conditional": {
+            "hide": "=asunto != \"RECUPERACION_CONSUMOS\""
+          },
+          "id": "Field_017",
+          "layout": {
+            "row": "Row_13",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_011",
+      "layout": {
+        "row": "Row_09",
+        "columns": null
+      }
+    },
+    {
+      "type": "group",
+      "label": "Revisión",
+      "showOutline": true,
+      "components": [
+        {
+          "type": "checklist",
+          "key": "controlesDebidoProceso",
+          "label": "Controles de debido proceso verificados",
+          "values": [
+            {
+              "label": "La decisión está motivada en hechos, pruebas y normas",
+              "value": "MOTIVACION"
+            },
+            {
+              "label": "Se valoraron las pruebas del usuario y de la empresa",
+              "value": "PRUEBAS"
+            },
+            {
+              "label": "La empresa es competente y la PQR es procedente",
+              "value": "COMPETENCIA"
+            },
+            {
+              "label": "El acto indicará los recursos, ante quién y en qué plazo",
+              "value": "RECURSOS"
+            }
+          ],
+          "id": "Field_019",
+          "layout": {
+            "row": "Row_15",
+            "columns": null
+          }
+        },
+        {
+          "type": "radio",
+          "key": "resultadoRevision",
+          "label": "Resultado",
+          "values": [
+            {
+              "label": "Aprobar el proyecto",
+              "value": "APROBAR"
+            },
+            {
+              "label": "Devolver al analista con observaciones",
+              "value": "DEVOLVER"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_020",
+          "layout": {
+            "row": "Row_16",
+            "columns": null
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "observacionesRevision",
+          "label": "Observaciones",
+          "validate": {
+            "required": true,
+            "minLength": 10
+          },
+          "id": "Field_021",
+          "layout": {
+            "row": "Row_17",
+            "columns": null
+          }
+        }
+      ],
+      "id": "Group_018",
+      "layout": {
+        "row": "Row_14",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "RevisarProyectoRespuesta",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}

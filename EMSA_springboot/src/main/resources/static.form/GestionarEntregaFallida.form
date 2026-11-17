@@ -1,0 +1,127 @@
+{
+  "components": [
+    {
+      "text": "## Gestionar entrega fallida\nC4.1 · Entregar factura y registrar prueba de entrega — **Analista de facturación**.\n\nSe agotaron los intentos automáticos de entrega. Gestione la entrega por un medio alterno y registre el soporte: sin prueba de entrega la factura no se considera entregada.",
+      "type": "text",
+      "id": "Text_001",
+      "layout": {
+        "row": "Row_01",
+        "columns": null
+      }
+    },
+    {
+      "label": "Número de factura",
+      "type": "textfield",
+      "id": "Field_002",
+      "key": "numeroFactura",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Código de suministro",
+      "type": "textfield",
+      "id": "Field_003",
+      "key": "codigoSuministro",
+      "layout": {
+        "row": "Row_02",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Último canal intentado",
+      "type": "textfield",
+      "id": "Field_004",
+      "key": "canalEntrega",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Intentos realizados",
+      "type": "number",
+      "id": "Field_005",
+      "key": "intentosEntrega",
+      "layout": {
+        "row": "Row_03",
+        "columns": 8
+      },
+      "disabled": true
+    },
+    {
+      "label": "Resultado del último intento",
+      "type": "textfield",
+      "id": "Field_006",
+      "key": "ultimoResultadoEntrega",
+      "layout": {
+        "row": "Row_04",
+        "columns": null
+      },
+      "disabled": true
+    },
+    {
+      "label": "Medio alterno de entrega",
+      "type": "select",
+      "id": "Field_007",
+      "key": "accionEntregaFallida",
+      "layout": {
+        "row": "Row_05",
+        "columns": null
+      },
+      "values": [
+        {
+          "label": "Entrega en oficina de atención con firma de recibido",
+          "value": "ENTREGA_EN_OFICINA"
+        },
+        {
+          "label": "Entrega personal en el predio con acta",
+          "value": "ENTREGA_PERSONAL_CON_ACTA"
+        },
+        {
+          "label": "Publicación en el portal con aviso al usuario",
+          "value": "PUBLICACION_PORTAL_Y_AVISO"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Soporte de la entrega (número de acta, guía o radicado)",
+      "type": "textfield",
+      "id": "Field_008",
+      "key": "soporteEntrega",
+      "layout": {
+        "row": "Row_06",
+        "columns": null
+      },
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Observaciones",
+      "type": "textarea",
+      "id": "Field_009",
+      "key": "observacionEntrega",
+      "layout": {
+        "row": "Row_07",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "GestionarEntregaFallida",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 16
+}
