@@ -252,6 +252,7 @@
           "type": "radio",
           "key": "sentidoDecision",
           "label": "Sentido de la decisión",
+          "defaultValue": "PARCIAL",
           "values": [
             {
               "label": "Favorable: accede a lo solicitado",
@@ -279,6 +280,7 @@
           "type": "textarea",
           "key": "motivacion",
           "label": "Motivación (hechos, pruebas y normas)",
+          "defaultValue": "La evidencia de C4 confirma que la factura se liquidó con la lectura reportada por C3 y la tarifa vigente; sin embargo, el consumo facturado casi duplica el promedio de los seis meses anteriores y esa desviación significativa no se investigó antes de facturar (art. 149, Ley 142 de 1994). Se accede parcialmente: se reliquida el período con el consumo promedio y se ordena el ajuste en C4 mientras se verifica el medidor.",
           "validate": {
             "required": true,
             "minLength": 40
@@ -293,6 +295,7 @@
           "type": "checkbox",
           "key": "ordenaAjusteC4",
           "label": "Ordenar ajuste en facturación (C4)",
+          "defaultValue": true,
           "id": "Field_025",
           "layout": {
             "row": "Row_20",
@@ -303,6 +306,7 @@
           "type": "number",
           "key": "valorAjuste",
           "label": "Valor del ajuste (COP)",
+          "defaultValue": 192910,
           "decimalDigits": 0,
           "validate": {
             "min": 0
@@ -320,6 +324,7 @@
           "type": "checkbox",
           "key": "solicitaRevisionC6",
           "label": "Solicitar revisión de la actuación de recuperación (C6)",
+          "defaultValue": false,
           "conditional": {
             "hide": "=asunto != \"RECUPERACION_CONSUMOS\""
           },
@@ -333,6 +338,7 @@
           "type": "select",
           "key": "causaRaiz",
           "label": "Causa raíz (para G1 y G3, y para medir la reapertura por la misma causa)",
+          "defaultValue": "DESVIACION_NO_INVESTIGADA",
           "values": [
             {
               "label": "Error de lectura o de medición",

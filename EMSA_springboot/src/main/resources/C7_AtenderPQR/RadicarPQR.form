@@ -18,6 +18,7 @@
           "type": "radio",
           "key": "canalRadicacion",
           "label": "Canal de radicación",
+          "defaultValue": "PRESENCIAL",
           "values": [
             {
               "label": "Presencial (ventanilla)",
@@ -41,6 +42,7 @@
           "type": "select",
           "key": "tipoPQR",
           "label": "Tipo de PQR",
+          "defaultValue": "RECLAMO",
           "values": [
             {
               "label": "Petición",
@@ -72,6 +74,7 @@
           "type": "select",
           "key": "asunto",
           "label": "Asunto",
+          "defaultValue": "FACTURACION",
           "values": [
             {
               "label": "Facturación",
@@ -115,6 +118,7 @@
           "type": "textfield",
           "key": "actoRecurrido",
           "label": "Acto o decisión que se recurre",
+          "defaultValue": "ACT-PQR-2026-000001-P",
           "description": "Número del acto de C5, C6 o C7 contra el que se presenta el recurso.",
           "conditional": {
             "hide": "=tipoPQR != \"RECURSO_REPOSICION\""
@@ -129,6 +133,7 @@
           "type": "checkbox",
           "key": "apelacionSubsidiaria",
           "label": "Interpone la apelación en subsidio ante la SSPD",
+          "defaultValue": false,
           "conditional": {
             "hide": "=tipoPQR != \"RECURSO_REPOSICION\""
           },
@@ -154,6 +159,7 @@
           "type": "textfield",
           "key": "codigoSuministro",
           "label": "Código de suministro",
+          "defaultValue": "SUM-100208",
           "description": "Formato SUM-000000.",
           "validate": {
             "required": true,
@@ -169,6 +175,7 @@
           "type": "select",
           "key": "calidadPeticionario",
           "label": "Calidad del peticionario",
+          "defaultValue": "SUSCRIPTOR",
           "values": [
             {
               "label": "Suscriptor",
@@ -196,6 +203,7 @@
           "type": "textfield",
           "key": "nombrePeticionario",
           "label": "Nombre del peticionario",
+          "defaultValue": "Usuario de prueba",
           "validate": {
             "required": true,
             "minLength": 3
@@ -222,6 +230,7 @@
           "type": "textarea",
           "key": "descripcionPQR",
           "label": "Hechos y motivo",
+          "defaultValue": "El usuario manifiesta que la factura del período de octubre de 2026 le cobra 412 kWh, casi el doble de su consumo habitual (unos 210 kWh al mes), sin cambios en el inmueble ni en los electrodomésticos.",
           "validate": {
             "required": true,
             "minLength": 20
@@ -236,6 +245,7 @@
           "type": "textarea",
           "key": "pretension",
           "label": "¿Qué solicita el usuario?",
+          "defaultValue": "Revisar la factura de octubre de 2026 y reliquidar el cobro con el consumo real del período.",
           "validate": {
             "required": true,
             "minLength": 10
@@ -250,6 +260,7 @@
           "type": "textfield",
           "key": "numeroFactura",
           "label": "Número de la factura reclamada",
+          "defaultValue": "FAC-2026-10-100208",
           "conditional": {
             "hide": "=asunto != \"FACTURACION\" and asunto != \"RECUPERACION_CONSUMOS\""
           },
@@ -263,6 +274,7 @@
           "type": "textfield",
           "key": "fechaExpedicionFactura",
           "label": "Fecha de expedición de la factura",
+          "defaultValue": "2026-11-05",
           "description": "Formato AAAA-MM-DD. Sirve para aplicar el plazo de cinco meses del art. 154.",
           "validate": {
             "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
@@ -280,6 +292,7 @@
           "type": "textarea",
           "key": "documentosAportados",
           "label": "Documentos y pruebas aportados",
+          "defaultValue": "Copia de la factura FAC-2026-10-100208; fotografía de la lectura del medidor tomada el 10 de noviembre de 2026; facturas de julio, agosto y septiembre de 2026.",
           "description": "Relacione los documentos recibidos. Se anexan al expediente único.",
           "id": "Field_017",
           "layout": {
@@ -303,6 +316,7 @@
           "type": "checkbox",
           "key": "autorizaNotificacionElectronica",
           "label": "El usuario autoriza la notificación electrónica (art. 56 CPACA)",
+          "defaultValue": false,
           "id": "Field_019",
           "layout": {
             "row": "Row_15",
@@ -313,6 +327,7 @@
           "type": "textfield",
           "key": "correoNotificacion",
           "label": "Correo electrónico para notificaciones",
+          "defaultValue": "usuario.prueba@example.com",
           "validate": {
             "validationType": "email"
           },
@@ -329,6 +344,7 @@
           "type": "textfield",
           "key": "direccionNotificacion",
           "label": "Dirección para notificaciones",
+          "defaultValue": "Calle 40 # 30-15, Villavicencio (Meta)",
           "validate": {
             "required": true
           },
@@ -342,6 +358,7 @@
           "type": "checkbox",
           "key": "requiereAccesibilidad",
           "label": "El usuario requiere ajustes de accesibilidad",
+          "defaultValue": false,
           "id": "Field_022",
           "layout": {
             "row": "Row_18",
@@ -352,6 +369,7 @@
           "type": "textfield",
           "key": "ajusteAccesibilidad",
           "label": "Ajuste requerido",
+          "defaultValue": "Atención con intérprete de lengua de señas colombiana",
           "conditional": {
             "hide": "=requiereAccesibilidad != true"
           },
@@ -365,6 +383,7 @@
           "type": "checkbox",
           "key": "autorizaTratamientoDatos",
           "label": "Autoriza el tratamiento de sus datos personales solo para este trámite (Ley 1581 de 2012)",
+          "defaultValue": true,
           "validate": {
             "required": true
           },

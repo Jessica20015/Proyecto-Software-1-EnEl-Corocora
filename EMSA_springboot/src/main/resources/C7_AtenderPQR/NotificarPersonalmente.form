@@ -85,6 +85,7 @@
           "type": "checkbox",
           "key": "identidadVerificada",
           "label": "Se verificó la identidad del usuario o de su apoderado",
+          "defaultValue": true,
           "validate": {
             "required": true
           },
@@ -98,6 +99,7 @@
           "type": "checkbox",
           "key": "copiaEntregada",
           "label": "Se entregó copia íntegra, auténtica y gratuita del acto",
+          "defaultValue": true,
           "validate": {
             "required": true
           },
@@ -111,6 +113,7 @@
           "type": "checkbox",
           "key": "recursosInformados",
           "label": "Se informaron los recursos, ante quién y en qué plazo",
+          "defaultValue": true,
           "validate": {
             "required": true
           },
@@ -124,6 +127,7 @@
           "type": "textarea",
           "key": "observacionesNotificacion",
           "label": "Observaciones de la diligencia",
+          "defaultValue": "Notificación personal en la ventanilla de Villavicencio: el usuario presentó su documento de identidad, recibió copia íntegra, auténtica y gratuita del acto y se le informaron los recursos que proceden, ante quién y en qué plazo.",
           "id": "Field_012",
           "layout": {
             "row": "Row_10",

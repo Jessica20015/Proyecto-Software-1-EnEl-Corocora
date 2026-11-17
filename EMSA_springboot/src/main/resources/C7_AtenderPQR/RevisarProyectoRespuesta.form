@@ -208,6 +208,12 @@
           "type": "checklist",
           "key": "controlesDebidoProceso",
           "label": "Controles de debido proceso verificados",
+          "defaultValue": [
+            "MOTIVACION",
+            "PRUEBAS",
+            "COMPETENCIA",
+            "RECURSOS"
+          ],
           "values": [
             {
               "label": "La decisión está motivada en hechos, pruebas y normas",
@@ -236,6 +242,7 @@
           "type": "radio",
           "key": "resultadoRevision",
           "label": "Resultado",
+          "defaultValue": "APROBAR",
           "values": [
             {
               "label": "Aprobar el proyecto",
@@ -259,6 +266,7 @@
           "type": "textarea",
           "key": "observacionesRevision",
           "label": "Observaciones",
+          "defaultValue": "Proyecto conforme al debido proceso: está motivado en la evidencia del proceso fuente, valora las pruebas aportadas por el usuario e indica los recursos que proceden, ante quién y en qué plazo. Se aprueba para notificar.",
           "validate": {
             "required": true,
             "minLength": 10

@@ -107,6 +107,7 @@
           "type": "select",
           "key": "tipoPQR",
           "label": "Tipo de PQR",
+          "defaultValue": "RECLAMO",
           "values": [
             {
               "label": "Petición",
@@ -138,6 +139,7 @@
           "type": "select",
           "key": "asunto",
           "label": "Asunto",
+          "defaultValue": "FACTURACION",
           "values": [
             {
               "label": "Facturación",
@@ -177,6 +179,7 @@
           "type": "textarea",
           "key": "justificacionTipificacion",
           "label": "Justificación de la tipificación",
+          "defaultValue": "Los hechos y la pretensión describen un cobro en la factura del período: se tipifica como reclamo de facturación (art. 154, Ley 142 de 1994), con término de 15 días hábiles y evidencia de C4.",
           "description": "Queda en el expediente único.",
           "validate": {
             "required": true,
