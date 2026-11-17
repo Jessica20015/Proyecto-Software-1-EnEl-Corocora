@@ -136,7 +136,8 @@
         "required": true,
         "minLength": 15
       },
-      "description": "Obligatorio. Deja la trazabilidad de qué cambió y por qué."
+      "description": "Obligatorio. Deja la trazabilidad de qué cambió y por qué.",
+      "defaultValue": "Se corrigió el estrato del suministro según la estratificación socioeconómica vigente del predio en Villavicencio (uso residencial, estrato 2). La factura se reliquida con la tabla DMN Determinar tarifa aplicable y vuelve a verificación de calidad."
     }
   ],
   "type": "default",

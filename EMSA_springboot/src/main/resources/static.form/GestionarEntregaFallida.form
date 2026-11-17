@@ -89,7 +89,8 @@
       ],
       "validate": {
         "required": true
-      }
+      },
+      "defaultValue": "ENTREGA_PERSONAL_CON_ACTA"
     },
     {
       "label": "Soporte de la entrega (número de acta, guía o radicado)",
@@ -102,7 +103,8 @@
       },
       "validate": {
         "required": true
-      }
+      },
+      "defaultValue": "ACTA-ENT-2026-11-0031"
     },
     {
       "label": "Observaciones",
@@ -112,7 +114,8 @@
       "layout": {
         "row": "Row_07",
         "columns": null
-      }
+      },
+      "defaultValue": "Agotados los intentos automáticos de entrega, la factura se entregó en el predio con apoyo del lector de C3, que conoce la ubicación del medidor; un residente mayor de edad la recibió y firmó el acta. Se solicita actualizar la dirección y el correo de entrega del suministro."
     }
   ],
   "type": "default",

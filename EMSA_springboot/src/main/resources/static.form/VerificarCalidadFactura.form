@@ -168,7 +168,8 @@
       },
       "validate": {
         "required": true
-      }
+      },
+      "defaultValue": "APROBADA"
     },
     {
       "label": "Motivo de la corrección",
@@ -199,7 +200,8 @@
       "description": "Se registra para el indicador 'factura correcta a la primera'. Los errores de medición no se corrigen aquí: se gestionan con C3.",
       "conditional": {
         "hide": "=resultadoVerificacion != \"CORREGIR\""
-      }
+      },
+      "defaultValue": "ERROR_DATOS_SUMINISTRO"
     },
     {
       "label": "Observaciones de calidad",
@@ -209,7 +211,8 @@
       "layout": {
         "row": "Row_10",
         "columns": null
-      }
+      },
+      "defaultValue": "Se verificaron el consumo facturable, el uso y el estrato del suministro, la versión vigente de la regla tarifaria de G3 y el cálculo del subsidio o la contribución."
     }
   ],
   "type": "default",

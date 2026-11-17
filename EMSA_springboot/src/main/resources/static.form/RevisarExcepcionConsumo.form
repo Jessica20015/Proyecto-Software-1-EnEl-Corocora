@@ -132,7 +132,8 @@
       ],
       "validate": {
         "required": true
-      }
+      },
+      "defaultValue": "FACTURAR"
     },
     {
       "label": "Evidencia y justificación de la decisión",
@@ -147,7 +148,8 @@
         "required": true,
         "minLength": 20
       },
-      "description": "Obligatorio. Queda en el expediente de facturación como soporte ante una PQR (C7)."
+      "description": "Obligatorio. Queda en el expediente de facturación como soporte ante una PQR (C7).",
+      "defaultValue": "Revisados el histórico de seis períodos del suministro y el reporte de lectura de C3: el consumo validado es consistente con el uso del predio, no hay indicios de falla del medidor ni de error de lectura y no existen reclamaciones abiertas. La excepción no se origina en la medición: procede facturar con el consumo validado."
     }
   ],
   "type": "default",
