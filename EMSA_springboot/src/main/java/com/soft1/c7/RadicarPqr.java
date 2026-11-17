@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,20 +36,27 @@ public class RadicarPqr implements JavaDelegate {
     @Override
     @SuppressWarnings("unchecked")
     public void execute(DelegateExecution execution) {
+        // la instancia sale de tipoPQR (no de la variable "instancia", que en un recurso aún dice PRIMERA):
+        // el recurso por mensaje llega con tipoPQR = RECURSO_REPOSICION (listener de Event_RecursoRecibido)
         String tipo = Vars.str(execution, "tipoPQR");
         String instancia = "RECURSO_REPOSICION".equals(tipo) ? "REPOSICION" : "PRIMERA";
-        String radicado = expediente.siguienteRadicado();
-        String expedienteId = Vars.str(execution, "expedienteId", radicado);
         Instant fecha = Instant.now();
 
-        // meses desde la expedición de la factura reclamada (art. 154, Ley 142: cinco meses)
+        // meses desde la expedición de la factura reclamada (art. 154, Ley 142: cinco meses).
+        // El campo es opcional: vacío (el Tasklist envía "" si está visible y sin llenar), corto o inválido = 0 meses,
+        // como el worker JS (if (fFactura)). Se calcula antes de tomar el radicado para no gastar un consecutivo.
         int meses = 0;
-        String fFactura = Vars.str(execution, "fechaExpedicionFactura");
-        if (fFactura != null) {
-            LocalDate f = LocalDate.parse(fFactura.substring(0, 10));
-            ZonedDateTime hoy = fecha.atZone(ZoneOffset.UTC);
-            meses = (hoy.getYear() - f.getYear()) * 12 + (hoy.getMonthValue() - f.getMonthValue())
-                    - (hoy.getDayOfMonth() < f.getDayOfMonth() ? 1 : 0);
+        String fFactura = Vars.str(execution, "fechaExpedicionFactura", "").trim();
+        if (!fFactura.isEmpty()) {
+            try {
+                LocalDate f = LocalDate.parse(fFactura.substring(0, Math.min(10, fFactura.length())));
+                ZonedDateTime hoy = fecha.atZone(ZoneOffset.UTC);
+                meses = (hoy.getYear() - f.getYear()) * 12 + (hoy.getMonthValue() - f.getMonthValue())
+                        - (hoy.getDayOfMonth() < f.getDayOfMonth() ? 1 : 0);
+            } catch (DateTimeParseException ex) {
+                Vars.log("radicar-pqr", execution, "fecha de expedición de la factura no válida «" + fFactura
+                        + "»: se toman 0 meses");
+            }
         }
 
         // reapertura por la misma causa: mismo suministro y asunto, cerrado hace 30 días o menos (§8.3)
@@ -78,6 +86,10 @@ public class RadicarPqr implements JavaDelegate {
             }
         }
 
+        // el consecutivo no se devuelve si la transacción falla: se toma después de los cálculos que leen la entrada
+        String radicado = expediente.siguienteRadicado();
+        String expedienteId = Vars.str(execution, "expedienteId", radicado);
+
         Vars.setStr(execution, "radicado", radicado);
         Vars.setStr(execution, "expedienteId", expedienteId);
         Vars.setStr(execution, "instancia", instancia);
@@ -88,6 +100,14 @@ public class RadicarPqr implements JavaDelegate {
         Vars.setStr(execution, "radicadoAnterior", radicadoAnterior);
         if (!Vars.tiene(execution, "canalRadicacion")) {
             Vars.setStr(execution, "canalRadicacion", "VIRTUAL");
+        }
+        // recurso radicado en ventanilla (formulario de inicio): el número del acto recurrido es el que ve el analista
+        // como "Radicado de la decisión recurrida". El recurso por mensaje ya lo trae (radicado de la primera instancia).
+        if ("REPOSICION".equals(instancia) && Vars.str(execution, "radicadoRecurrido", "").isBlank()) {
+            String acto = Vars.str(execution, "actoRecurrido", "").trim();
+            if (!acto.isEmpty()) {
+                Vars.setStr(execution, "radicadoRecurrido", acto);
+            }
         }
         // valores por defecto de variables opcionales (formularios con campos ocultos)
         for (String k : new String[]{"apelacionSubsidiaria", "autorizaNotificacionElectronica", "requiereAccesibilidad", "procedenRecursos"}) {
@@ -101,15 +121,27 @@ public class RadicarPqr implements JavaDelegate {
                 Vars.setStr(execution, k, "");
             }
         }
-        // cada instrucción (primera instancia o recurso) empieza sin decisión previa
-        Vars.setBool(execution, "ordenaAjusteC4", false);
+        // cada instrucción (primera instancia o recurso) empieza sin decisión previa.
+        // Las variables que llena un Camunda Form se ELIMINAN en lugar de ponerse en false/0/"": el Tasklist 7.24
+        // carga todas las variables en el formulario y una variable existente (aunque valga false, 0 o "")
+        // reemplaza el defaultValue del campo. Es seguro: la compuerta «¿Ordena ajuste en C4?» usa
+        // execution.getVariable('ordenaAjusteC4'), que tolera la variable ausente; ${resultadoRevision} solo se
+        // evalúa después de RevisarProyectoRespuesta (radio obligatorio); EnviarAjusteC4 tolera valorAjuste ausente.
+        if ("PRIMERA".equals(instancia)) {
+            execution.removeVariable("ordenaAjusteC4");
+            execution.removeVariable("valorAjuste");
+        } else {
+            // en el recurso no se propone por defecto un segundo ajuste en C4 (el analista lo marca si procede)
+            Vars.setBool(execution, "ordenaAjusteC4", false);
+            Vars.setDbl(execution, "valorAjuste", 0);
+        }
+        execution.removeVariable("resultadoRevision");
+        execution.removeVariable("observacionesRevision");
+        // solicitaRevisionC6 está oculto salvo en RECUPERACION_CONSUMOS, pero la compuerta ${solicitaRevisionC6} lo lee siempre
         Vars.setBool(execution, "solicitaRevisionC6", false);
-        Vars.setDbl(execution, "valorAjuste", 0);
         Vars.setBool(execution, "silencioPositivo", false);
         Vars.setBool(execution, "evidenciaOportuna", true);
         Vars.setStr(execution, "evidenciaRecibida", "");
-        Vars.setStr(execution, "resultadoRevision", "");
-        Vars.setStr(execution, "observacionesRevision", "");
 
         expediente.registrar(execution,
                 "PRIMERA".equals(instancia) ? "PQR_RADICADA" : "RECURSO_RADICADO",

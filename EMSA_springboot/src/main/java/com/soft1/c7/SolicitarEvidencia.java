@@ -57,7 +57,10 @@ public class SolicitarEvidencia implements JavaDelegate {
 
         // simulación del proceso fuente
         if ("RESPONDE".equals(Vars.str(execution, "simularEvidencia", "RESPONDE"))) {
-            String texto = EVIDENCIA.getOrDefault(proceso, e -> proceso + ": evidencia del asunto.").apply(execution);
+            // Map.of no admite claves null: sin procesoEvidencia se usa el texto genérico, como el worker JS
+            Function<DelegateExecution, String> evidencia = proceso == null ? null : EVIDENCIA.get(proceso);
+            String texto = evidencia != null ? evidencia.apply(execution)
+                    : (proceso != null ? proceso + ": evidencia del asunto." : "Evidencia del asunto.");
             Map<String, Object> variables = new HashMap<>();
             variables.put("evidenciaRecibida", Variables.stringValue(texto));
             variables.put("fechaEvidencia", Variables.stringValue(Fechas.ahora()));

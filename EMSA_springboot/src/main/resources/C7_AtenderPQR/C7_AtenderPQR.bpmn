@@ -234,7 +234,11 @@
         <bpmn:outgoing>Flow_23</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:userTask id="Activity_ProyectarRespuesta" name="Analizar y proyectar la respuesta" camunda:formRef="ProyectarRespuestaPQR" camunda:formRefBinding="deployment" camunda:candidateGroups="analistas-pqr">
-        <bpmn:documentation>El analista de PQR valora la evidencia y proyecta una decisión motivada: sentido, motivación, acciones en otros procesos (ajuste en C4, revisión de la actuación en C6) y causa raíz para G1 y G3.</bpmn:documentation>
+        <bpmn:documentation>El analista de PQR valora la evidencia y proyecta una decisión motivada: sentido, motivación, acciones en otros procesos (ajuste en C4, revisión de la actuación en C6) y causa raíz para G1 y G3. Al terminar se limpia el resultado de la revisión anterior, para que una nueva revisión jurídica (tras DEVOLVER) empiece con los valores por defecto del formulario.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.removeVariable('resultadoRevision')}" event="end" />
+          <camunda:executionListener expression="${execution.removeVariable('observacionesRevision')}" event="end" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_23</bpmn:incoming>
         <bpmn:outgoing>Flow_24</bpmn:outgoing>
         <bpmn:property id="Property_Activity_ProyectarRespuesta_0" name="__targetRef_placeholder" />
@@ -478,10 +482,10 @@
     <bpmn:sequenceFlow id="Flow_38" sourceRef="Gateway_SplitEjecucion" targetRef="Gateway_OrdenaAjuste" />
     <bpmn:sequenceFlow id="Flow_44" sourceRef="CallActivity_Notificar" targetRef="Gateway_JoinEjecucion" />
     <bpmn:sequenceFlow id="Flow_39" name="Sí" sourceRef="Gateway_OrdenaAjuste" targetRef="Event_AjusteC4">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ordenaAjusteC4}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('ordenaAjusteC4') == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_40" name="No" sourceRef="Gateway_OrdenaAjuste" targetRef="Gateway_JoinAjuste">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!ordenaAjusteC4}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('ordenaAjusteC4') != true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_41" sourceRef="Event_AjusteC4" targetRef="Gateway_JoinAjuste" />
     <bpmn:sequenceFlow id="Flow_42" sourceRef="Gateway_JoinAjuste" targetRef="Gateway_SolicitaRevision" />
