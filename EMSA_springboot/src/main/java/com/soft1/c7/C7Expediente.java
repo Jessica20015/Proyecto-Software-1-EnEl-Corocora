@@ -1,5 +1,6 @@
 package com.soft1.c7;
 
+import com.soft1.common.DespuesDelCommit;
 import com.soft1.common.Fechas;
 import com.soft1.common.JsonlStore;
 import com.soft1.common.Vars;
@@ -49,14 +50,19 @@ public class C7Expediente {
         registro.put("version", Vars.str(e, "versionRegla", "Reglas PQR G3 v1.0"));
         registro.put("causa", datos.get("causa"));
         registro.put("datos", datos);
-        store.agregar(ARCHIVO, registro);
+        // el registro se arma ya (valores y fechaHora de este momento), pero se escribe al confirmar la transacción:
+        // si el engine la revierte, no queda en el expediente un evento que no ocurrió
+        DespuesDelCommit.ejecutar(() -> store.agregar(ARCHIVO, registro));
     }
 
     public List<Map<String, Object>> leer() {
         return store.leer(ARCHIVO);
     }
 
-    /** Los consecutivos se asignan en serie (JsonlStore es synchronized) para no repetir radicados. */
+    /**
+     * Los consecutivos se asignan en serie (JsonlStore es synchronized) para no repetir radicados.
+     * A diferencia de registrar(), NO se aplaza al commit: el número debe quedar reservado de inmediato.
+     */
     public String siguienteRadicado() {
         int n = store.siguienteConsecutivo(CONSECUTIVO);
         return String.format("PQR-%d-%06d", LocalDate.now().getYear(), n);
