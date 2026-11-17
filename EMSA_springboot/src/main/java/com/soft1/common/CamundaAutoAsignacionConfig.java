@@ -61,6 +61,20 @@ public class CamundaAutoAsignacionConfig {
         String nombreCarril = obtenerNombreCarril(task).toLowerCase(Locale.ROOT);
         String key = task.getTaskDefinitionKey().toLowerCase(Locale.ROOT);
 
+        // C7 (Atender una PQR): carriles de C7_AtenderPQR y C7_NotificarDecision, antes de la regla genérica
+        // "analista" de C4 ("Analista de PQR" no es un analista de facturación). Las tareas del subproceso
+        // "Instruir y decidir" no tienen carril propio (nombre vacío): se reconocen por su clave.
+        if (nombreCarril.contains("orientador")) {
+            return "orientadores-pqr";
+        }
+        if (nombreCarril.contains("apoyo jurídico de pqr") || nombreCarril.contains("apoyo juridico de pqr")
+                || key.contains("revisarjuridica")) {
+            return "juridica-pqr";
+        }
+        if (nombreCarril.contains("analista de pqr") || key.contains("proyectarrespuesta")) {
+            return "analistas-pqr";
+        }
+
         if (nombreCarril.contains("cuadrilla") || key.contains("visita") || key.contains("reparacion") || key.contains("inspeccion")) {
             return "cuadrilla";
         }
@@ -78,9 +92,6 @@ public class CamundaAutoAsignacionConfig {
         }
         if (nombreCarril.contains("analista") || key.contains("excepcion") || key.contains("entrega")) {
             return "analistas-facturacion";
-        }
-        if (nombreCarril.contains("pqr") || key.contains("pqr") || key.contains("respuesta") || key.contains("notificar")) {
-            return "atencion-pqr";
         }
         return null;
     }

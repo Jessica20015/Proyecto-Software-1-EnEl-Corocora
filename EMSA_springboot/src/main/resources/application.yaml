@@ -2,6 +2,16 @@ camunda.bpm.admin-user:
   id: demo
   password: demo
 
+# Filtro de Tasklist con todas las tareas (Camunda Run lo crea por defecto; el starter de Spring Boot solo si se configura).
+# Los filtros "Tareas de mis grupos" y "Mis tareas" los crea CamundaUsuariosConfig.
+camunda.bpm.filter:
+  create: Todas las tareas
+
+# http://localhost:8080/ sirve el portal propio (static/index.html) en lugar de redirigir al webapp de Camunda;
+# Cockpit, Tasklist y Admin siguen en http://localhost:8080/camunda/app/
+camunda.bpm.webapp:
+  index-redirect-enabled: false
+
 # ---------------------------------------------------------------------------
 # Configuración que antes se pasaba como variables de entorno a los workers JS
 # ---------------------------------------------------------------------------
