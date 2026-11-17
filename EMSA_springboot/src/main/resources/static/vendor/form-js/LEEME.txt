@@ -1,0 +1,11 @@
+form-js (visor de Camunda Forms) copiado dentro del jar para que el portal funcione sin internet.
+
+Paquete:  @bpmn-io/form-js 1.8.7 (schemaVersion 16, la misma línea de form-js que trae Tasklist 7.24)
+Archivos: form-viewer.umd.js  <- https://cdn.jsdelivr.net/npm/@bpmn-io/form-js@1.8.7/dist/form-viewer.umd.js
+          form-js.css         <- https://cdn.jsdelivr.net/npm/@bpmn-io/form-js@1.8.7/dist/assets/form-js.css
+          LICENSE             <- https://cdn.jsdelivr.net/npm/@bpmn-io/form-js@1.8.7/LICENSE
+MD5:      form-viewer.umd.js a45d80bfcd9fd0b046e46946c3ecd3ef
+          form-js.css        d8ddaf01b70edc468bc35958da4d9ff9
+
+Licencia bpmn.io (ver LICENSE): los archivos se usan sin modificar y la marca
+«Powered by bpmn.io» que pinta el formulario debe quedar visible y sin taparse.

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENEL La Corocora · Portal de Procesos BPM</title>
+    <link rel="icon" href="data:,">
     <style>
         :root {
           --primary: #0f4c81;
@@ -229,7 +230,22 @@
           box-shadow: 0 10px 25px rgba(0,0,0,0.2);
           z-index: 999;
         }
+
+        /* Camunda Forms (form-js) de C7: la regla global "input { width:100% }" descuadra radios y checkboxes */
+        .form-camunda { margin-bottom: 8px; }
+        .form-camunda input[type="radio"],
+        .form-camunda input[type="checkbox"] { width: auto; padding: 0; margin: 0 8px 0 0; }
+        /* la regla global "button { padding: 11px 18px }" tapa las flechas del campo numérico */
+        .form-camunda .fjs-number-arrow-container button { padding: 0; border-radius: 0; font-weight: normal; }
+        /* form-js 1.8 no trae traducciones: marcador de los select sin valor en español */
+        .form-camunda .fjs-select-display.fjs-select-placeholder { font-size: 0; }
+        .form-camunda .fjs-select-display.fjs-select-placeholder::before { content: "Seleccione una opción"; font-size: var(--font-size-input, 14px); }
+        /* la columna del formulario es angosta: las etiquetas largas pasan a la línea siguiente en vez de cortarse */
+        .form-camunda .fjs-form-field-label { white-space: normal; overflow: visible; }
     </style>
+    <!-- form-js 1.8.7 (schemaVersion 16, la misma línea que usa Tasklist 7.24), servido desde el propio jar.
+         Licencia bpmn.io en vendor/form-js/LICENSE: la marca «Powered by bpmn.io» debe quedar visible. -->
+    <link rel="stylesheet" href="vendor/form-js/form-js.css">
 </head>
 <body>
 <header>
@@ -286,7 +302,10 @@
                     <h3>Atención de PQR</h3>
                     <p>Radicación de peticiones, quejas y recursos, tipificación, proyección de respuesta y notificación.</p>
                     <div class="actor-tags">
-                        <span class="actor-tag">Agente Atención PQR</span>
+                        <span class="actor-tag">Orientador PQR</span>
+                        <span class="actor-tag">Analista PQR</span>
+                        <span class="actor-tag">Apoyo Jurídico</span>
+                        <span class="actor-tag">Coordinación PQR</span>
                     </div>
                 </div>
                 <button style="width:100%;">Ingresar a Proceso C7</button>
@@ -357,6 +376,7 @@
 </div>
 
 <div id="toast" class="hidden"></div>
+<script src="vendor/form-js/form-viewer.umd.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
