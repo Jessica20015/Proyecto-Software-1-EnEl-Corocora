@@ -8,37 +8,90 @@ Antes, las *service tasks* eran **External Tasks** atendidas por workers de Node
 (`camunda-external-task-client-js`). Ahora son **`JavaDelegate`** dentro de la misma aplicación:
 no hay que levantar ningún worker aparte.
 
+**Versiones:** Camunda Platform **7.24.0** y Spring Boot **3.5.7**. La primera versión usaba Camunda 7.20,
+pero su Tasklist trae un form-js antiguo (esquema 8) que no abre los formularios de C7: falla con
+*«form field of type &lt;group&gt; not supported»*. Los modelos se hicieron para 7.24 (esquema de formularios 16).
+
 ## Cómo ejecutarlo
 
 Requisitos: **Java 17+** y **Maven**.
 
 ```bash
-mvn spring-boot:run
+mvn clean spring-boot:run
 ```
 
-* Camunda Cockpit / Tasklist / Admin: <http://localhost:8080> — usuario `demo`, clave `demo`
+(`clean` evita que una copia vieja de los modelos en `target/classes` se despliegue junto con la nueva.)
+
+* Portal del proyecto (C2, C4 y C7): <http://localhost:8080/>
+* Camunda Cockpit / Tasklist / Admin: <http://localhost:8080/camunda/app/> — usuario `demo`, clave `demo`
 * REST API: <http://localhost:8080/engine-rest>
 * Al arrancar se despliegan solos los 6 procesos, 5 DMN y 20 formularios (un único *deployment*,
   como exige la regla de despliegue del README original).
+* Tasklist trae tres filtros: «Tareas de mis grupos», «Mis tareas» y «Todas las tareas». Los usuarios de
+  prueba de cada carril están en el [README principal](../README.md#usuarios-de-prueba) (clave `1234`).
 
 > La base de datos es H2 en memoria (igual que el ejemplo): al reiniciar se pierden las instancias.
 > Los expedientes `.jsonl` y el consecutivo de radicados sí quedan en disco, en `./expediente/`.
+> Para empezar una demostración desde cero, borre esa carpeta con la aplicación detenida.
 
 ## Cómo iniciar cada proceso
 
 | Proceso | Cómo se inicia |
 |---|---|
-| **C2** Restablecer el servicio tras una falla | Tasklist → *Start process* → «Restablecer el servicio tras una falla» |
-| **C7** Atender una PQR (ventanilla/teléfono) | Tasklist → *Start process* → «C7 · Atender una PQR del usuario» |
-| **C4** Facturar el servicio (por mensaje) | `cd simuladores && node c4-simular-entradas.js normal` |
-| **C7** por portal / recursos | `cd simuladores && node c7-simular-entradas.js reclamo-portal` |
+| **C2** Restablecer el servicio tras una falla | Tasklist → *Start process* → «Restablecer el servicio tras una falla», o el portal con `operador1` |
+| **C7** Atender una PQR (ventanilla/teléfono) | Tasklist → *Start process* → «C7 · Atender una PQR del usuario», o el portal con `orientador1` |
+| **C4** Facturar el servicio (por mensaje) | `cd simuladores && node c4-simular-entradas.js normal`, o el portal con `analista1` |
+| **C7** por portal virtual (mensaje `MsgPQRPortal`) | `cd simuladores && node c7-simular-entradas.js reclamo-portal` |
+| **C7** recurso, comparecencia o acceso electrónico | `node c7-simular-entradas.js recurso PQR-AAAA-NNNNNN [apelacion]` (y `comparecer`, `acceso`) |
 
-Los simuladores (`simuladores/`) son los mismos `simular-entradas.js` de antes, sin cambios de lógica
-(solo requieren Node 18+, sin `npm install`). Sin argumentos listan todos los escenarios.
+Los simuladores (`simuladores/`) solo requieren Node 18+, sin `npm install`. Sin argumentos muestran la
+ayuda y los escenarios. El de C7 imprime el radicado de cada caso y los comandos de seguimiento.
+
+## C7 · Atender una PQR
+
+* Modelos en `src/main/resources/C7_AtenderPQR/` (2 BPMN, 2 DMN y 6 forms) y delegates en
+  `src/main/java/com/soft1/c7/`.
+* Carriles y usuarios: `orientador1` (orientadores-pqr), `analistapqr1` (analistas-pqr), `juridica1`
+  (juridica-pqr) y `pqr1` (coordinación, en los tres grupos).
+* Los 6 formularios traen **valores por defecto**. Aceptándolos, el caso recorre: radicación de un reclamo de
+  facturación → evidencia de C4 (simulada) → respuesta PARCIAL con ajuste en C4 → revisión jurídica (APROBAR)
+  → notificación personal en C7.1 → término para recurrir → cierre. `RadicarPqr` ya no crea en vacío
+  `ordenaAjusteC4`, `valorAjuste`, `resultadoRevision` ni `observacionesRevision`: en Tasklist una variable
+  existente reemplaza el *Default value* del formulario.
+* Tiempos en modo demo (`emsa.c7.segundos-por-dia: 30`): término de respuesta 15 días hábiles = 7,5 min,
+  alerta al 70 % ≈ 5¼ min, plazo para recurrir 150 s. Si una tarea del analista queda sin atender 7,5 min,
+  opera el silencio administrativo positivo (está modelado así).
+* Reapertura: si se radica otra PQR con el mismo suministro y asunto antes de 30 días (15 min en demo) del
+  cierre de una anterior, el caso se marca como reapertura y pasa por revisión jurídica. Como el formulario
+  trae por defecto el suministro `SUM-100208`, dos PQR seguidas con los valores por defecto muestran este
+  comportamiento (el camino es el mismo, porque la respuesta parcial ya pasa por revisión jurídica). Para
+  evitarlo basta con cambiar el código de suministro.
+* En un ciclo de devolución (revisión jurídica → DEVOLVER → nueva proyección), al terminar la proyección se
+  limpian `resultadoRevision` y `observacionesRevision`, así la segunda revisión vuelve a mostrar los
+  valores por defecto. La compuerta «¿Ordena ajuste en C4?» tolera que `ordenaAjusteC4` no venga (por
+  ejemplo, si la tarea se completa por REST sin ese dato).
+
+| Mensaje | Lo recibe | Lo envía (simulado) |
+|---|---|---|
+| `MsgPQRPortal` | inicio de C7 (portal virtual) | simulador `c7-simular-entradas.js` |
+| `MsgEvidenciaPQR` | C7, espera de evidencia | `SolicitarEvidencia` (proceso fuente C2–C6) |
+| `MsgRecursoReposicion` | C7, espera del recurso | `RegistrarPruebaNotificacion` o el simulador (`recurso`) |
+| `MsgComparecenciaNotificacion` / `MsgAccesoElectronico` | C7.1, espera de notificación | `EnviarComunicacion` o el simulador (`comparecer` / `acceso`) |
+
+Mensajes que solo se lanzan (constancias y avisos a otros procesos): `MsgConstanciaRadicado`,
+`MsgSolicitudEvidencia`, `MsgRefacturacionAutorizada`, `MsgRevisionActuacionC6`, `MsgRemisionApelacionSSPD`,
+`MsgCausaRaizPQR` y `MsgComunicacionDecision`.
+
+## Portal del proyecto (`static/`)
+
+`index.html` y `app.js` son una bandeja de trabajo por proceso y por rol. Para C7 el portal muestra los
+**formularios reales de Camunda** (los mismos `.form` desplegados, con sus valores por defecto y
+validaciones) usando form-js 1.8.7, que va incluido en `static/vendor/form-js` con su licencia, así que
+funciona sin internet. C2 y C4 siguen usando sus listas de campos propias.
 
 ## Qué cambió en los modelos
 
-Solo se tocaron los `.bpmn`, y únicamente en las 29 tareas/eventos que eran externos:
+En los `.bpmn` solo cambiaron las 29 tareas/eventos que eran externos:
 
 ```xml
 <!-- antes -->
@@ -47,7 +100,9 @@ Solo se tocaron los `.bpmn`, y únicamente en las 29 tareas/eventos que eran ext
 <bpmn:serviceTask id="..." camunda:delegateExpression="${liquidarFactura}"/>
 ```
 
-Los `.dmn` y `.form` están intactos. Se usa `delegateExpression` (y no `camunda:class` como en el ejemplo)
+Los `.dmn` están intactos. A los `.form` de C4 y C7 solo se les agregó `defaultValue` (los datos por defecto
+que pide la entrega). Los archivos de C7 se agruparon en `src/main/resources/C7_AtenderPQR/`.
+Se usa `delegateExpression` (y no `camunda:class` como en el ejemplo)
 porque los delegates necesitan que Spring les inyecte `RuntimeService`, la configuración y los
 almacenes de archivos; con `camunda:class` Camunda crea la clase por reflexión y nada se inyecta.
 Cada clase sigue el mismo patrón del ejemplo: `@Component("nombre") … implements JavaDelegate`.
@@ -91,8 +146,15 @@ Cada clase sigue el mismo patrón del ejemplo: `@Component("nombre") … impleme
 * `common/Vars` — lectura/escritura tipada de variables (reemplaza `v()`, `str()`, `dbl()`, `int()`, `bool()` de los workers).
 * `common/Fechas` — fechas ISO-8601 en UTC con milisegundos, igual que `toISOString()`.
 * `common/JsonlStore` — archivos de expediente `.jsonl` y consecutivo de radicados.
-* `common/MensajeriaSimulada` — simula a C3, C5, G3, el operador de entrega y al usuario que recurre:
-  unos segundos después correlaciona el mensaje correspondiente (antes: `setTimeout` + `POST /message`).
+* `common/MensajeriaSimulada` — simula a los participantes externos (en C4: C3, C5, G3 y el operador de
+  entrega; en C7: los procesos fuente de la evidencia, el operador de notificación y el usuario que recurre).
+  Unos segundos después correlaciona el mensaje correspondiente (antes: `setTimeout` + `POST /message`).
+  El envío se programa solo cuando la transacción del delegate se confirma, y solo se reintenta si la
+  instancia aún no llegó al evento (o hay un conflicto de concurrencia). Otro error se registra en el log
+  con nivel ERROR y no se repite.
+* `common/DespuesDelCommit` — ejecuta una acción cuando la transacción del motor se confirma (registro del
+  expediente de C7 y mensajes simulados), para no dejar rastros de trabajo revertido.
+* `common/CamundaUsuariosConfig` — grupos y usuarios de prueba de cada carril y los filtros de Tasklist.
 * `c4/C4Config` — reglas tarifarias versionadas y plazos de los temporizadores.
 * `c7/C7Calendario` — días hábiles de Colombia, festivos 2026–2027, modo demo/producción.
 * `c7/C7Expediente` — registro de eventos de trazabilidad y radicados `PQR-AAAA-NNNNNN`.
@@ -107,6 +169,9 @@ Reemplaza las variables de entorno de los workers:
 | `C7_MODO` | `emsa.c7.modo` (`demo` \| `produccion`) |
 | `C7_SEGUNDOS_POR_DIA` | `emsa.c7.segundos-por-dia` |
 | carpeta `expediente/` de cada worker | `emsa.expediente-dir` |
+
+Además: `camunda.bpm.filter.create` crea el filtro «Todas las tareas» de Tasklist y
+`camunda.bpm.webapp.index-redirect-enabled: false` hace que `http://localhost:8080/` abra el portal.
 
 ## Diferencias de comportamiento a tener en cuenta
 

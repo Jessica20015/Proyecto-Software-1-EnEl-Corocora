@@ -1,0 +1,160 @@
+# ENEL La Corocora (EMSA) · Procesos BPM ejecutables en Camunda 7
+
+Proyecto del curso de profundización **Software 1** (Universidad de los Llanos). Los procesos de negocio
+del caso *ENEL La Corocora* están modelados en BPMN, DMN y Camunda Forms para **Camunda Platform 7.24** y
+se ejecutan en modo *standalone*: una sola aplicación **Spring Boot** con el motor de Camunda embebido.
+No hay que instalar Camunda Run ni levantar workers aparte.
+
+---
+
+## Nombre del proyecto
+
+**ENEL La Corocora — Sistema de Gestión y Automatización de Procesos de Distribución y Comercialización
+de Energía Eléctrica** (caso de estudio basado en la Electrificadora del Meta S.A. E.S.P., EMSA).
+
+## Integrantes del grupo y proceso de negocio a cargo
+
+| Integrante (nombre completo) | Proceso de negocio del que se hizo cargo |
+|---|---|
+| JESSICA MARCELA BAQUERO MEJÍA | **C2** · Restablecer el servicio tras una falla |
+| MIGUEL ANGEL TRASLAVIÑA RODRIGUEZ | **C4** · Facturar el servicio de energía |
+| DUVAN FELIPE BAQUERO CERQUERA | **C7** · Atender una PQR del usuario |
+
+---
+
+## Proyecto del que se hizo responsable cada integrante
+
+Todos los procesos viven en la aplicación [`EMSA_springboot`](EMSA_springboot). Los modelos están en
+`EMSA_springboot/src/main/resources` y la lógica de las tareas de servicio (`JavaDelegate`) en
+`EMSA_springboot/src/main/java/com/soft1/<proceso>`.
+
+### 1. C2 · Restablecer el servicio tras una falla
+
+- **Estudiante:** JESSICA MARCELA BAQUERO MEJÍA
+- **Proceso que asumió:** C2 · Restablecer el servicio tras una falla técnica: atención de avisos de
+  interrupción, validación de alarmas en la red, visita técnica, inspección en terreno, despacho de
+  cuadrillas, reparación y restitución del suministro.
+- **Nombre de la carpeta en el repositorio:**
+  - Modelos: `EMSA_springboot/src/main/resources/static.bpmn`, `static.dmn` y `static.form` (archivos de C2)
+  - Código Java: `EMSA_springboot/src/main/java/com/soft1/c2`
+- **Procesos, forms y DMN que se deben desplegar en el motor:**
+  - BPMN: `RestablecerElServicioTrasUnaFalla.bpmn` (proceso principal, id `restablecerServicioTrasFalla`) y
+    `realizarVisitaTecnica.bpmn` (subproceso por *call activity*, id `realizarVisitaTecnica`)
+  - DMN: `clasificarDano.dmn` (decisión `clasificacionRepuestos`)
+  - Forms: `registroFallaRecibido` (inicio), `validarAlarmasForm`, `agendarVisitaTecnica`, `validarVisitaForm`,
+    `realizarReporteVisitaTecnica`, `inspeccionarFallaForm`, `despacharCuadrillaForm`, `reporteReparacion`,
+    `confirmarRestitucionForm`, `escalarDemoraForm`
+- **Nombre visible para darle «start»:** en Tasklist, *Start process* → **«Restablecer el servicio tras una falla»**
+  (abre el formulario `registroFallaRecibido`). En el portal: proceso C2 con el usuario `operador1`.
+
+### 2. C4 · Facturar el servicio de energía
+
+- **Estudiante:** MIGUEL ANGEL TRASLAVIÑA RODRIGUEZ
+- **Proceso que asumió:** C4 · Facturar el servicio de energía: consolidación de lecturas, clasificación del
+  consumo con DMN, tarifa con subsidios y contribuciones por estrato, control de calidad antes de emitir,
+  entrega de la factura con prueba de entrega (C4.1) y cuenta por cobrar hacia C5.
+- **Nombre de la carpeta en el repositorio:**
+  - Modelos: `EMSA_springboot/src/main/resources/static.bpmn`, `static.dmn` y `static.form` (archivos de C4)
+  - Código Java: `EMSA_springboot/src/main/java/com/soft1/c4`
+  - Simulador de entradas: `EMSA_springboot/simuladores/c4-simular-entradas.js`
+- **Procesos, forms y DMN que se deben desplegar en el motor:**
+  - BPMN: `C4_FacturarServicioEnergia.bpmn` (proceso principal, id `C4_FacturarServicioEnergia`) y
+    `C4_EntregarFactura.bpmn` (C4.1, invocado por *call activity*, id `C4_EntregarFactura`)
+  - DMN: `ClasificarConsumo.dmn` (hit policy FIRST) y `DeterminarTarifaAplicable.dmn` (hit policy UNIQUE)
+  - Forms: `RevisarExcepcionConsumo`, `VerificarCalidadFactura`, `CorregirLiquidacion`, `GestionarEntregaFallida`
+- **Nombre visible para darle «start»:** **«C4 · Facturar el servicio de energía»**. Se inicia por **mensaje**
+  (`MsgConsumoValidado`, la lectura validada que envía C3), no desde un formulario:
+  - Simulador: `cd EMSA_springboot/simuladores` y `node c4-simular-entradas.js normal`
+    (sin argumentos lista los escenarios).
+  - Portal: proceso C4 con el usuario `analista1` → «Simular Lectura Validada».
+
+### 3. C7 · Atender una PQR del usuario
+
+- **Estudiante:** DUVAN FELIPE BAQUERO CERQUERA
+- **Proceso que asumió:** C7 · Atender una PQR del usuario (Ley 142 de 1994): radicación integral por
+  ventanilla, teléfono y portal; tipificación y término aplicable con DMN; solicitud de evidencia a los
+  procesos fuente (C2 a C6); control de términos con alerta no interrumpible al 70 % y silencio
+  administrativo positivo al vencer; revisión jurídica del debido proceso; notificación con prueba (C7.1);
+  recurso de reposición y remisión de la apelación a la SSPD.
+- **Nombre de la carpeta en el repositorio:**
+  - Modelos: [`EMSA_springboot/src/main/resources/C7_AtenderPQR`](EMSA_springboot/src/main/resources/C7_AtenderPQR)
+  - Código Java: [`EMSA_springboot/src/main/java/com/soft1/c7`](EMSA_springboot/src/main/java/com/soft1/c7)
+  - Diagramas: [`docs/C7_AtenderPQR`](docs/C7_AtenderPQR)
+  - Simulador de entradas: `EMSA_springboot/simuladores/c7-simular-entradas.js`
+- **Procesos, forms y DMN que se deben desplegar en el motor:**
+  - BPMN: `C7_AtenderPQR.bpmn` (proceso principal, id `C7_AtenderPQR`) y `C7_NotificarDecision.bpmn`
+    (C7.1, invocado por *call activity*, id `C7_NotificarDecision`; no aparece en *Start process*)
+  - DMN: `TipificarPQR.dmn` (hit policy FIRST) y `DeterminarRecursosProcedentes.dmn` (hit policy UNIQUE)
+  - Forms: `RadicarPQR` (inicio), `TipificarEnrutarPQR`, `ProyectarRespuestaPQR`, `RevisarProyectoRespuesta`,
+    `ReconocerSilencioPositivo`, `NotificarPersonalmente`
+- **Nombre visible para darle «start»:** en Tasklist, *Start process* → **«C7 · Atender una PQR del usuario»**
+  (abre el formulario `RadicarPQR` ya diligenciado). En el portal: proceso C7 con el usuario `orientador1`.
+  Las PQR del portal virtual llegan por el mensaje `MsgPQRPortal`
+  (`node c7-simular-entradas.js reclamo-portal`).
+
+![C7 · Atender una PQR del usuario](docs/C7_AtenderPQR/C7_AtenderPQR.png)
+
+---
+
+## Cómo ejecutarlo
+
+Requisitos: **Java 17 o superior** y **Maven 3.9**.
+
+```bash
+cd EMSA_springboot
+mvn clean spring-boot:run
+```
+
+Use `clean` al menos la primera vez después de actualizar el repositorio. Los modelos de C7 se movieron a su
+propia carpeta, y una copia vieja en `target/` haría que el mismo proceso se despliegue dos veces.
+
+| Qué | Dónde |
+|---|---|
+| Portal del proyecto (C2, C4 y C7) | <http://localhost:8080/> |
+| Camunda Tasklist, Cockpit y Admin | <http://localhost:8080/camunda/app/> (usuario `demo`, clave `demo`) |
+| REST API del motor | <http://localhost:8080/engine-rest> |
+
+Al arrancar, la aplicación despliega sola **todos los BPMN, DMN y forms en un único *deployment***
+(`META-INF/processes.xml`), así se resuelven los `formRef` y las *call activities* con *binding*
+`deployment`. Si se quieren desplegar en un Camunda 7.24 aparte (Camunda Modeler → *Deploy*), cada
+proceso debe desplegarse junto con sus DMN y forms en el mismo despliegue.
+
+La base de datos es H2 en memoria: al reiniciar se pierden las instancias.
+
+### Usuarios de prueba
+
+Todos con clave `1234`, salvo `demo`. En Tasklist hay tres filtros: «Tareas de mis grupos», «Mis tareas»
+y «Todas las tareas».
+
+| Proceso | Usuario | Rol (grupo) |
+|---|---|---|
+| Todos | `demo` (clave `demo`) | Administrador de Camunda |
+| C2 | `operador1` · `cuadrilla1` · `coordinador1` | `operador-control` · `cuadrilla` · `coordinador-zona` |
+| C4 | `analista1` · `calidad1` · `liquidador1` | `analistas-facturacion` · `calidad-facturacion` · `liquidadores-tarifarios` |
+| C7 | `orientador1` | Orientador y enrutador de usuarios (`orientadores-pqr`) |
+| C7 | `analistapqr1` | Analista de PQR (`analistas-pqr`) |
+| C7 | `juridica1` | Apoyo jurídico de PQR (`juridica-pqr`) |
+| C7 | `pqr1` | Coordinación de la Oficina de PQR (los tres grupos de C7) |
+
+---
+
+## Nota: datos por defecto
+
+> *Todos los datos que requieran los procesos para su ejecución deben estar puestos por defecto para
+> facilitar su ejecución.*
+
+- Los campos editables de los formularios traen su **valor por defecto** (`defaultValue`, la propiedad
+  *Default value* del editor de formularios de Camunda Modeler):
+  - C7: los 6 formularios.
+  - C4: los 4 formularios.
+  <!-- C2: falta completar los valores por defecto de sus formularios (por ejemplo, registroFallaRecibido). -->
+- Basta con aceptar lo que viene diligenciado para recorrer el camino principal de cada proceso. En C7:
+  radicar un reclamo de facturación → proyectar una respuesta parcial con ajuste en C4 → aprobar en la
+  revisión jurídica → notificar en persona → cerrar el expediente.
+- Los participantes externos (procesos fuente de evidencia, operador de notificación, C3, C5, G3…) los simula
+  la propia aplicación, y los términos legales corren en «modo demo»: en C7 un día hábil dura 30 segundos
+  (`emsa.c7.segundos-por-dia` en `application.yaml`).
+- Los simuladores (`EMSA_springboot/simuladores`) radican casos de ejemplo con todos sus datos.
+
+En [`EMSA_springboot/README.md`](EMSA_springboot/README.md) está el detalle técnico: cómo se pasaron los
+workers de JavaScript a `JavaDelegate`, los escenarios de los simuladores y la configuración.
