@@ -49,7 +49,8 @@ ayuda y los escenarios. El de C7 imprime el radicado de cada caso y los comandos
 
 ## C7 · Atender una PQR
 
-* Modelos en `src/main/resources/C7_AtenderPQR/` (2 BPMN, 2 DMN y 6 forms) y delegates en
+* Modelos en `src/main/resources/static.bpmn`, `static.dmn` y `static.form` (2 BPMN, 2 DMN y 6 forms), junto
+  a los de C2 y C4, y delegates en
   `src/main/java/com/soft1/c7/`.
 * Carriles y usuarios: `orientador1` (orientadores-pqr), `analistapqr1` (analistas-pqr), `juridica1`
   (juridica-pqr) y `pqr1` (coordinación, en los tres grupos).
@@ -101,8 +102,8 @@ En los `.bpmn` solo cambiaron las 29 tareas/eventos que eran externos:
 ```
 
 Los `.dmn` están intactos. A los `.form` de C4 y C7 solo se les agregó `defaultValue` (los datos por defecto
-que pide la entrega). Los archivos de C7 se agruparon en `src/main/resources/C7_AtenderPQR/`.
-Se usa `delegateExpression` (y no `camunda:class` como en el ejemplo)
+que pide la entrega). Todos los modelos (C2, C4 y C7) están en las carpetas `static.bpmn`, `static.dmn` y
+`static.form`. Se usa `delegateExpression` (y no `camunda:class` como en el ejemplo)
 porque los delegates necesitan que Spring les inyecte `RuntimeService`, la configuración y los
 almacenes de archivos; con `camunda:class` Camunda crea la clase por reflexión y nada se inyecta.
 Cada clase sigue el mismo patrón del ejemplo: `@Component("nombre") … implements JavaDelegate`.

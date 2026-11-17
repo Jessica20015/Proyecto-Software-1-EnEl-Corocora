@@ -77,7 +77,7 @@ Todos los procesos viven en la aplicación [`EMSA_springboot`](EMSA_springboot).
   administrativo positivo al vencer; revisión jurídica del debido proceso; notificación con prueba (C7.1);
   recurso de reposición y remisión de la apelación a la SSPD.
 - **Nombre de la carpeta en el repositorio:**
-  - Modelos: [`EMSA_springboot/src/main/resources/C7_AtenderPQR`](EMSA_springboot/src/main/resources/C7_AtenderPQR)
+  - Modelos: `EMSA_springboot/src/main/resources/static.bpmn`, `static.dmn` y `static.form` (archivos de C7)
   - Código Java: [`EMSA_springboot/src/main/java/com/soft1/c7`](EMSA_springboot/src/main/java/com/soft1/c7)
   - Diagramas: [`docs/C7_AtenderPQR`](docs/C7_AtenderPQR)
   - Simulador de entradas: `EMSA_springboot/simuladores/c7-simular-entradas.js`
@@ -105,8 +105,8 @@ cd EMSA_springboot
 mvn clean spring-boot:run
 ```
 
-Use `clean` al menos la primera vez después de actualizar el repositorio. Los modelos de C7 se movieron a su
-propia carpeta, y una copia vieja en `target/` haría que el mismo proceso se despliegue dos veces.
+Use `clean` al menos la primera vez después de actualizar el repositorio: si en `target/` queda una copia
+vieja de un modelo que cambió de carpeta, el mismo proceso se desplegaría dos veces.
 
 | Qué | Dónde |
 |---|---|
