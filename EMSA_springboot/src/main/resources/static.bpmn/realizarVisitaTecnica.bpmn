@@ -7,7 +7,7 @@
     <bpmn:startEvent id="StartEvent_1" name="se visita el domicilio">
       <bpmn:outgoing>Flow_1jzxv7g</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="ValidarVisita" name="Validar visita" camunda:formRef="validarVisitaForm" camunda:formRefBinding="latest">
+    <bpmn:userTask id="ValidarVisita" name="Validar visita" camunda:formRef="validarVisitaForm" camunda:formRefBinding="latest" camunda:candidateGroups="cuadrilla">
       <bpmn:incoming>Flow_1jzxv7g</bpmn:incoming>
       <bpmn:outgoing>Flow_0llh0m3</bpmn:outgoing>
     </bpmn:userTask>
@@ -16,7 +16,7 @@
       <bpmn:outgoing>visitaRealizada</bpmn:outgoing>
       <bpmn:outgoing>visitaNoRealizada</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="realizarReporteVisita" name="Realizar reporte de visita tecnica" camunda:formRef="realizarReporteVisitaTecnica" camunda:formRefBinding="latest">
+    <bpmn:userTask id="realizarReporteVisita" name="Realizar reporte de visita tecnica" camunda:formRef="realizarReporteVisitaTecnica" camunda:formRefBinding="latest" camunda:candidateGroups="cuadrilla">
       <bpmn:incoming>visitaRealizada</bpmn:incoming>
       <bpmn:outgoing>Flow_1p39o9e</bpmn:outgoing>
     </bpmn:userTask>

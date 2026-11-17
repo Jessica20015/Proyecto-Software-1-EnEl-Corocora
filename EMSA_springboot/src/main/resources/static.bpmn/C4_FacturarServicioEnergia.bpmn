@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_C4_Facturar" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_C4_Facturar" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
   <bpmn:collaboration id="Collaboration_C4">
     <bpmn:participant id="Participant_C4" name="ENEL La Corocora · Gerencia Comercial — C4 · Facturar el servicio de energía" processRef="C4_FacturarServicioEnergia">
       <bpmn:documentation>Proceso core seleccionado (I/S/F = 5/4/4). Dueño: Gerencia Comercial. Caso: un suministro en un período facturable.</bpmn:documentation>
@@ -19,7 +19,7 @@
     <bpmn:messageFlow id="MessageFlow_CuentaC5" name="Cuenta por cobrar" sourceRef="Event_CuentaPorCobrarC5" targetRef="Participant_C5" />
     <bpmn:messageFlow id="MessageFlow_FacturaUsuario" name="Factura" sourceRef="Activity_EntregarFactura" targetRef="Participant_Usuario" />
   </bpmn:collaboration>
-  <bpmn:process id="C4_FacturarServicioEnergia" name="C4 · Facturar el servicio de energía" isExecutable="true" camunda:historyTimeToLive="180" camunda:versionTag="1.0">
+  <bpmn:process id="C4_FacturarServicioEnergia" name="C4 · Facturar el servicio de energía" isExecutable="true" camunda:versionTag="1.0" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_C4_FacturarServicioEnergia">
       <bpmn:lane id="Lane_SistemaComercial" name="Sistema comercial · motor de liquidación">
         <bpmn:flowNodeRef>StartEvent_ConsumoValidado</bpmn:flowNodeRef>
@@ -66,7 +66,7 @@
     <bpmn:startEvent id="StartEvent_ConsumoValidado" name="Consumo validado recibido">
       <bpmn:documentation>Disparador de C4: consumo validado disponible desde C3 (interfaz de entrada C3). Caso: un suministro en un período facturable. t0 = fechaLiberacionC3, inicio del indicador 'ciclo de facturación' (P90 en horas).</bpmn:documentation>
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable('esRefacturacion', false)}" event="end" />
+        <camunda:executionListener expression="${execution.setVariable(&#39;esRefacturacion&#39;, false)}" event="end" />
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_01</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_ConsumoValidado" messageRef="Message_ConsumoValidado" />
@@ -74,7 +74,7 @@
     <bpmn:startEvent id="StartEvent_Refacturacion" name="Refacturación autorizada recibida">
       <bpmn:documentation>Interfaces de entrada C6 (refacturación autorizada) y C7 (ajuste autorizado). Genera una nueva versión de factura del mismo suministro-período sin duplicar la cuenta por cobrar.</bpmn:documentation>
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable('esRefacturacion', true)}" event="end" />
+        <camunda:executionListener expression="${execution.setVariable(&#39;esRefacturacion&#39;, true)}" event="end" />
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_02</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_Refacturacion" messageRef="Message_Refacturacion" />
@@ -197,12 +197,12 @@
       <bpmn:incoming>Flow_22</bpmn:incoming>
       <bpmn:outgoing>Flow_23</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Activity_VerificarCalidad" name="Verificar calidad de la factura" camunda:formRef="VerificarCalidadFactura" camunda:formRefBinding="deployment" camunda:candidateGroups="calidad-facturacion">
+    <bpmn:userTask id="Activity_VerificarCalidad" name="Verificar calidad de la factura" camunda:formRef="VerificarCalidadFactura" camunda:formRefBinding="latest" camunda:candidateGroups="calidad-facturacion">
       <bpmn:documentation>Control de calidad previo a la emisión (indicador 'factura correcta a la primera').</bpmn:documentation>
       <bpmn:incoming>Flow_23</bpmn:incoming>
       <bpmn:outgoing>Flow_24</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:boundaryEvent id="Event_SlaCalidadVencido" name="SLA de verificación vencido" attachedToRef="Activity_VerificarCalidad" cancelActivity="false">
+    <bpmn:boundaryEvent id="Event_SlaCalidadVencido" name="SLA de verificación vencido" cancelActivity="false" attachedToRef="Activity_VerificarCalidad">
       <bpmn:outgoing>Flow_28</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_SlaCalidad">
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">${plazoSlaCalidad}</bpmn:timeDuration>
@@ -224,7 +224,7 @@
     <bpmn:userTask id="Activity_CorregirLiquidacion" name="Corregir liquidación" camunda:formRef="CorregirLiquidacion" camunda:formRefBinding="deployment" camunda:candidateGroups="liquidadores-tarifarios">
       <bpmn:documentation>Registra la corrección autorizada y su motivo; la factura se reliquida y vuelve a verificación.</bpmn:documentation>
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable('correccionesPreEmision', correccionesPreEmision + 1)}" event="end" />
+        <camunda:executionListener expression="${execution.setVariable(&#39;correccionesPreEmision&#39;, correccionesPreEmision + 1)}" event="end" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_26</bpmn:incoming>
       <bpmn:outgoing>Flow_27</bpmn:outgoing>
@@ -243,7 +243,7 @@
       <bpmn:outgoing>Flow_32</bpmn:outgoing>
       <bpmn:outgoing>Flow_33</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:callActivity id="Activity_EntregarFactura" name="Entregar factura con prueba de entrega" calledElement="C4_EntregarFactura" camunda:calledElementBinding="latest">
+    <bpmn:callActivity id="Activity_EntregarFactura" name="Entregar factura con prueba de entrega" calledElement="C4_EntregarFactura">
       <bpmn:documentation>Última actividad del perfil de C4. Proceso global reutilizable C4_EntregarFactura (Call Activity), que también usa la refacturación.</bpmn:documentation>
       <bpmn:extensionElements>
         <camunda:in businessKey="#{execution.processBusinessKey}" />
@@ -364,73 +364,18 @@
       <bpmndi:BPMNShape id="Participant_C4_di" bpmnElement="Participant_C4" isHorizontal="true" isExpanded="true">
         <dc:Bounds x="160" y="160" width="2900" height="1010" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_C3_di" bpmnElement="Participant_C3" isHorizontal="true">
-        <dc:Bounds x="160" y="40" width="1540" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_Usuario_di" bpmnElement="Participant_Usuario" isHorizontal="true">
-        <dc:Bounds x="2300" y="40" width="760" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_C6_di" bpmnElement="Participant_C6" isHorizontal="true">
-        <dc:Bounds x="160" y="1210" width="290" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_C7_di" bpmnElement="Participant_C7" isHorizontal="true">
-        <dc:Bounds x="470" y="1210" width="380" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_G3_di" bpmnElement="Participant_G3" isHorizontal="true">
-        <dc:Bounds x="870" y="1210" width="520" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_C5_di" bpmnElement="Participant_C5" isHorizontal="true">
-        <dc:Bounds x="2300" y="1210" width="760" height="60" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_SistemaComercial_di" bpmnElement="Lane_SistemaComercial" isHorizontal="true">
-        <dc:Bounds x="190" y="160" width="2870" height="380" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_AnalistaFacturacion_di" bpmnElement="Lane_AnalistaFacturacion" isHorizontal="true">
-        <dc:Bounds x="190" y="540" width="2870" height="200" />
+      <bpmndi:BPMNShape id="Lane_LiquidadorTarifario_di" bpmnElement="Lane_LiquidadorTarifario" isHorizontal="true">
+        <dc:Bounds x="190" y="1000" width="2870" height="170" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_ControlCalidad_di" bpmnElement="Lane_ControlCalidad" isHorizontal="true">
         <dc:Bounds x="190" y="740" width="2870" height="260" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_LiquidadorTarifario_di" bpmnElement="Lane_LiquidadorTarifario" isHorizontal="true">
-        <dc:Bounds x="190" y="1000" width="2870" height="170" />
+      <bpmndi:BPMNShape id="Lane_AnalistaFacturacion_di" bpmnElement="Lane_AnalistaFacturacion" isHorizontal="true">
+        <dc:Bounds x="190" y="540" width="2870" height="200" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="MessageFlow_ConsumoValidado_di" bpmnElement="MessageFlow_ConsumoValidado">
-        <di:waypoint x="262" y="100" />
-        <di:waypoint x="262" y="382" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_RefacturacionC6_di" bpmnElement="MessageFlow_RefacturacionC6">
-        <di:waypoint x="252" y="1210" />
-        <di:waypoint x="252" y="517" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_AjusteC7_di" bpmnElement="MessageFlow_AjusteC7">
-        <di:waypoint x="520" y="1210" />
-        <di:waypoint x="520" y="1185" />
-        <di:waypoint x="274" y="1185" />
-        <di:waypoint x="274" y="516" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_ExcepcionC3_di" bpmnElement="MessageFlow_ExcepcionC3">
-        <di:waypoint x="1110" y="232" />
-        <di:waypoint x="1110" y="100" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_ConsumoCorregido_di" bpmnElement="MessageFlow_ConsumoCorregido">
-        <di:waypoint x="1400" y="100" />
-        <di:waypoint x="1400" y="215" />
-        <di:waypoint x="1318" y="215" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_SolicitudG3_di" bpmnElement="MessageFlow_SolicitudG3">
-        <di:waypoint x="600" y="518" />
-        <di:waypoint x="600" y="1195" />
-        <di:waypoint x="1000" y="1195" />
-        <di:waypoint x="1000" y="1210" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_CuentaC5_di" bpmnElement="MessageFlow_CuentaC5">
-        <di:waypoint x="2510" y="518" />
-        <di:waypoint x="2510" y="1210" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MessageFlow_FacturaUsuario_di" bpmnElement="MessageFlow_FacturaUsuario">
-        <di:waypoint x="2510" y="220" />
-        <di:waypoint x="2510" y="100" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Lane_SistemaComercial_di" bpmnElement="Lane_SistemaComercial" isHorizontal="true">
+        <dc:Bounds x="190" y="160" width="2870" height="380" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_ConsumoValidado_di" bpmnElement="StartEvent_ConsumoValidado">
         <dc:Bounds x="244" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -448,12 +393,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_ConsolidarInsumos_di" bpmnElement="Activity_ConsolidarInsumos">
         <dc:Bounds x="420" y="360" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_ReglaNoVigente_di" bpmnElement="Event_ReglaNoVigente">
-        <dc:Bounds x="482" y="422" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="408" y="465" width="90" height="40" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_SolicitudReglaG3_di" bpmnElement="Event_SolicitudReglaG3">
         <dc:Bounds x="582" y="482" width="36" height="36" />
@@ -520,12 +459,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_VerificarCalidad_di" bpmnElement="Activity_VerificarCalidad">
         <dc:Bounds x="1940" y="800" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_SlaCalidadVencido_di" bpmnElement="Event_SlaCalidadVencido">
-        <dc:Bounds x="1992" y="862" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1915" y="900" width="85" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_EscalarCoordinador_di" bpmnElement="Activity_EscalarCoordinador">
         <dc:Bounds x="2070" y="910" width="100" height="80" />
@@ -596,6 +529,33 @@
           <dc:Bounds x="2285" y="300" width="55" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Disparadores_di" bpmnElement="TextAnnotation_Disparadores">
+        <dc:Bounds x="300" y="575" width="240" height="95" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Art149_di" bpmnElement="TextAnnotation_Art149">
+        <dc:Bounds x="1530" y="185" width="270" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Calidad_di" bpmnElement="TextAnnotation_Calidad">
+        <dc:Bounds x="1720" y="760" width="205" height="110" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_C5_di" bpmnElement="TextAnnotation_C5">
+        <dc:Bounds x="2600" y="565" width="250" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_Resultado_di" bpmnElement="TextAnnotation_Resultado">
+        <dc:Bounds x="2850" y="300" width="190" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_SlaCalidadVencido_di" bpmnElement="Event_SlaCalidadVencido">
+        <dc:Bounds x="1992" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1915" y="900" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReglaNoVigente_di" bpmnElement="Event_ReglaNoVigente">
+        <dc:Bounds x="482" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="465" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_01_di" bpmnElement="Flow_01">
         <di:waypoint x="280" y="400" />
         <di:waypoint x="325" y="400" />
@@ -626,7 +586,7 @@
         <di:waypoint x="785" y="400" />
         <di:waypoint x="1575" y="400" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1200" y="382" width="45" height="14" />
+          <dc:Bounds x="1201" y="382" width="43" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_08_di" bpmnElement="Flow_08">
@@ -783,21 +743,6 @@
         <di:waypoint x="2705" y="400" />
         <di:waypoint x="2772" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_Disparadores_di" bpmnElement="TextAnnotation_Disparadores">
-        <dc:Bounds x="300" y="575" width="240" height="95" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_Art149_di" bpmnElement="TextAnnotation_Art149">
-        <dc:Bounds x="1530" y="185" width="270" height="70" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_Calidad_di" bpmnElement="TextAnnotation_Calidad">
-        <dc:Bounds x="1720" y="760" width="205" height="110" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_C5_di" bpmnElement="TextAnnotation_C5">
-        <dc:Bounds x="2600" y="565" width="250" height="70" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_Resultado_di" bpmnElement="TextAnnotation_Resultado">
-        <dc:Bounds x="2850" y="300" width="190" height="140" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_Disparadores_di" bpmnElement="Association_Disparadores">
         <di:waypoint x="320" y="575" />
         <di:waypoint x="275" y="515" />
@@ -818,6 +763,24 @@
         <di:waypoint x="2850" y="380" />
         <di:waypoint x="2807" y="395" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_C3_di" bpmnElement="Participant_C3" isHorizontal="true">
+        <dc:Bounds x="160" y="40" width="1540" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Usuario_di" bpmnElement="Participant_Usuario" isHorizontal="true">
+        <dc:Bounds x="2300" y="40" width="760" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_C6_di" bpmnElement="Participant_C6" isHorizontal="true">
+        <dc:Bounds x="160" y="1210" width="290" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_C7_di" bpmnElement="Participant_C7" isHorizontal="true">
+        <dc:Bounds x="470" y="1210" width="380" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_G3_di" bpmnElement="Participant_G3" isHorizontal="true">
+        <dc:Bounds x="870" y="1210" width="520" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_C5_di" bpmnElement="Participant_C5" isHorizontal="true">
+        <dc:Bounds x="2300" y="1210" width="760" height="60" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataInputAssociation_Historico_ConsolidarInsumos_di" bpmnElement="DataInputAssociation_Historico_ConsolidarInsumos">
         <di:waypoint x="435" y="280" />
         <di:waypoint x="450" y="360" />
@@ -826,13 +789,50 @@
         <di:waypoint x="515" y="280" />
         <di:waypoint x="495" y="360" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_EmitirFactura_Factura_di" bpmnElement="DataOutputAssociation_EmitirFactura_Factura">
+        <di:waypoint x="2260" y="360" />
+        <di:waypoint x="2260" y="330" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_RegistrarExpediente_Expediente_di" bpmnElement="DataOutputAssociation_RegistrarExpediente_Expediente">
         <di:waypoint x="2550" y="360" />
         <di:waypoint x="2580" y="355" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataOutputAssociation_EmitirFactura_Factura_di" bpmnElement="DataOutputAssociation_EmitirFactura_Factura">
-        <di:waypoint x="2260" y="360" />
-        <di:waypoint x="2260" y="330" />
+      <bpmndi:BPMNEdge id="MessageFlow_ConsumoValidado_di" bpmnElement="MessageFlow_ConsumoValidado">
+        <di:waypoint x="262" y="100" />
+        <di:waypoint x="262" y="382" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_RefacturacionC6_di" bpmnElement="MessageFlow_RefacturacionC6">
+        <di:waypoint x="252" y="1210" />
+        <di:waypoint x="252" y="517" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_AjusteC7_di" bpmnElement="MessageFlow_AjusteC7">
+        <di:waypoint x="520" y="1210" />
+        <di:waypoint x="520" y="1185" />
+        <di:waypoint x="274" y="1185" />
+        <di:waypoint x="274" y="516" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_ExcepcionC3_di" bpmnElement="MessageFlow_ExcepcionC3">
+        <di:waypoint x="1110" y="232" />
+        <di:waypoint x="1110" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_ConsumoCorregido_di" bpmnElement="MessageFlow_ConsumoCorregido">
+        <di:waypoint x="1400" y="100" />
+        <di:waypoint x="1400" y="215" />
+        <di:waypoint x="1318" y="215" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_SolicitudG3_di" bpmnElement="MessageFlow_SolicitudG3">
+        <di:waypoint x="600" y="518" />
+        <di:waypoint x="600" y="1195" />
+        <di:waypoint x="1000" y="1195" />
+        <di:waypoint x="1000" y="1210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_CuentaC5_di" bpmnElement="MessageFlow_CuentaC5">
+        <di:waypoint x="2510" y="518" />
+        <di:waypoint x="2510" y="1210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_FacturaUsuario_di" bpmnElement="MessageFlow_FacturaUsuario">
+        <di:waypoint x="2510" y="220" />
+        <di:waypoint x="2510" y="100" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

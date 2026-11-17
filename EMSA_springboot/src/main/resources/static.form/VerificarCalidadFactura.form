@@ -149,13 +149,6 @@
     },
     {
       "label": "Resultado de la verificación",
-      "type": "radio",
-      "id": "Field_014",
-      "key": "resultadoVerificacion",
-      "layout": {
-        "row": "Row_08",
-        "columns": null
-      },
       "values": [
         {
           "label": "Aprobada: emitir la factura",
@@ -166,19 +159,19 @@
           "value": "CORREGIR"
         }
       ],
+      "type": "radio",
+      "id": "Field_014",
+      "key": "resultadoVerificacion",
+      "layout": {
+        "row": "Row_08",
+        "columns": null
+      },
       "validate": {
         "required": true
       }
     },
     {
       "label": "Motivo de la corrección",
-      "type": "select",
-      "id": "Field_015",
-      "key": "motivoCorreccion",
-      "layout": {
-        "row": "Row_09",
-        "columns": null
-      },
       "values": [
         {
           "label": "Error de cálculo en la liquidación",
@@ -193,6 +186,13 @@
           "value": "ERROR_REGLA_TARIFARIA"
         }
       ],
+      "type": "select",
+      "id": "Field_015",
+      "key": "motivoCorreccion",
+      "layout": {
+        "row": "Row_09",
+        "columns": null
+      },
       "validate": {
         "required": true
       },
@@ -215,10 +215,10 @@
   "type": "default",
   "id": "VerificarCalidadFactura",
   "executionPlatform": "Camunda Platform",
-  "executionPlatformVersion": "7.24.0",
+  "executionPlatformVersion": "7.23.0",
   "exporter": {
     "name": "Camunda Modeler",
-    "version": "5.52.0"
+    "version": "5.39.0"
   },
-  "schemaVersion": 16
+  "schemaVersion": 19
 }

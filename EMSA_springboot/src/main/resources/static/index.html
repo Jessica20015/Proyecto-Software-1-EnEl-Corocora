@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENEL La Corocora · Portal de Procesos BPM</title>
+    <style>
+        :root {
+          --primary: #0f4c81;
+          --primary-hover: #0a365c;
+          --accent: #0ea5e9;
+          --success: #059669;
+          --warning: #d97706;
+          --danger: #dc2626;
+          --bg: #f1f5f9;
+          --surface: #ffffff;
+          --text: #0f172a;
+          --muted: #64748b;
+          --border: #e2e8f0;
+          --radius: 12px;
+        }
+        * { box-sizing: border-box; }
+        body {
+          font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+          margin: 0;
+          background: var(--bg);
+          color: var(--text);
+          line-height: 1.5;
+        }
+        header {
+          background: linear-gradient(135deg, #0f172a 0%, var(--primary) 100%);
+          color: #fff;
+          padding: 16px 32px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.15);
+        }
+        .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
+        .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #38bdf8; }
+        .container { max-width: 1200px; margin: 28px auto; padding: 0 20px; }
+        .hidden { display: none !important; }
+
+        /* Tarjetas de Selección de Proceso */
+        .process-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 22px;
+          margin-top: 24px;
+        }
+        .process-card {
+          background: var(--surface);
+          border: 2px solid var(--border);
+          border-radius: var(--radius);
+          padding: 26px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .process-card:hover {
+          border-color: var(--accent);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 24px rgba(14, 165, 233, 0.14);
+        }
+        .process-code {
+          display: inline-block;
+          background: #e0f2fe;
+          color: var(--primary);
+          font-weight: 800;
+          font-size: 12px;
+          padding: 4px 10px;
+          border-radius: 999px;
+          margin-bottom: 12px;
+          width: fit-content;
+        }
+        .process-card h3 { margin: 0 0 8px 0; font-size: 19px; color: var(--text); }
+        .process-card p { margin: 0 0 18px 0; font-size: 14px; color: var(--muted); }
+        .actor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+        .actor-tag {
+          background: #f1f5f9;
+          color: #334155;
+          font-size: 11.5px;
+          font-weight: 600;
+          padding: 3px 9px;
+          border-radius: 6px;
+        }
+
+        /* Tarjetas y Grid General */
+        .card {
+          background: var(--surface);
+          border-radius: var(--radius);
+          padding: 24px;
+          border: 1px solid var(--border);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+          margin-bottom: 24px;
+        }
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid var(--border);
+          padding-bottom: 14px;
+          margin-bottom: 18px;
+          gap: 12px;
+        }
+        .card-header h3 { margin: 0; font-size: 17px; color: var(--primary); }
+        .grid-main { display: grid; grid-template-columns: 1fr 1.35fr; gap: 24px; align-items: start; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+        /* Controles de Formulario */
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .field label { font-size: 13px; font-weight: 600; color: #334155; }
+        input, select, textarea {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 14px;
+          font-family: inherit;
+          background: #f8fafc;
+          transition: all 0.2s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+          outline: none;
+          border-color: var(--accent);
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+        textarea { min-height: 82px; resize: vertical; }
+
+        /* Botones */
+        button {
+          background: var(--primary);
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          padding: 11px 18px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s, transform 0.1s;
+        }
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: scale(0.99); }
+        button.btn-success { background: var(--success); width: 100%; margin-top: 8px; font-size: 15px; }
+        button.btn-success:hover { background: #047857; }
+        button.btn-outline {
+          background: transparent;
+          color: var(--primary);
+          border: 1.5px solid var(--primary);
+          padding: 7px 14px;
+          font-size: 13px;
+        }
+        button.btn-outline:hover { background: #eff6ff; }
+        button.btn-warning { background: var(--warning); padding: 7px 12px; font-size: 12px; }
+        button.btn-header { background: rgba(255,255,255,0.14); padding: 7px 14px; font-size: 13px; margin-left: 8px; }
+        button.btn-header:hover { background: rgba(255,255,255,0.24); }
+
+        /* Badges y Listas */
+        .badge {
+          display: inline-block;
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+          background: #e0f2fe;
+          color: #0369a1;
+        }
+        .badge-role { background: rgba(56, 189, 248, 0.22); color: #e0f2fe; margin-left: 6px; }
+        .badge-warn { background: #fef3c7; color: #92400e; }
+        .badge-err { background: #fee2e2; color: #991b1b; }
+
+        .task-item {
+          border: 1.5px solid var(--border);
+          border-radius: 10px;
+          padding: 14px 16px;
+          margin-bottom: 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .task-item:hover { border-color: var(--accent); box-shadow: 0 4px 10px rgba(14, 165, 233, 0.08); }
+        .task-item.active { border-color: var(--primary); background: #f8fafc; }
+
+        .context-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+          gap: 10px;
+          background: #f8fafc;
+          border: 1px solid var(--border);
+          border-left: 4px solid var(--accent);
+          border-radius: 8px;
+          padding: 14px;
+          margin-bottom: 18px;
+        }
+        .context-item span { display: block; font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+        .context-item strong { font-size: 13.5px; color: var(--text); word-break: break-word; }
+
+        /* Actores habilitados en Login */
+        .actor-btn-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .actor-chip-btn {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #f8fafc;
+          color: var(--text);
+          border: 1.5px solid #cbd5e1;
+          padding: 10px 14px;
+          border-radius: 8px;
+          font-size: 13px;
+          text-align: left;
+        }
+        .actor-chip-btn:hover { background: #eff6ff; border-color: var(--primary); }
+
+        #toast {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          background: #0f172a;
+          color: #fff;
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-size: 14px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+          z-index: 999;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="brand"><span class="brand-dot"></span> ENEL La Corocora · Gestión Operativa BPM</div>
+    <div id="userBar" class="hidden">
+        <span id="userInfo"></span>
+        <button class="btn-header" onclick="cambiarDeProceso()">Cambiar proceso</button>
+        <button class="btn-header" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+</header>
+
+<div class="container">
+    <!-- PASO 1: Selección de Proceso -->
+    <div id="processSelectView">
+        <div style="text-align: center; max-width: 650px; margin: 16px auto 28px auto;">
+            <h2 style="margin: 0 0 8px 0; color: var(--primary);">Selecciona el Proceso a Ejecutar</h2>
+            <p style="margin: 0; color: var(--muted);">
+                Cada flujo habilitará únicamente los actores y bandejas de trabajo autorizados para su operación.
+            </p>
+        </div>
+
+        <div class="process-grid">
+            <div class="process-card" onclick="seleccionarProceso('C2')">
+                <div>
+                    <span class="process-code">PROCESO C2</span>
+                    <h3>Restablecimiento del Servicio</h3>
+                    <p>Atención de fallas eléctricas, validación de alarmas, programación y ejecución de visitas técnicas en campo.</p>
+                    <div class="actor-tags">
+                        <span class="actor-tag">Operador Control</span>
+                        <span class="actor-tag">Cuadrilla Técnica</span>
+                        <span class="actor-tag">Coordinador Zona</span>
+                    </div>
+                </div>
+                <button style="width:100%;">Ingresar a Proceso C2</button>
+            </div>
+
+            <div class="process-card" onclick="seleccionarProceso('C4')">
+                <div>
+                    <span class="process-code">PROCESO C4</span>
+                    <h3>Facturación de Energía</h3>
+                    <p>Revisión de desviaciones de consumo, liquidación tarifaria, auditoría de calidad y gestión de entrega.</p>
+                    <div class="actor-tags">
+                        <span class="actor-tag">Analista Facturación</span>
+                        <span class="actor-tag">Control Calidad</span>
+                        <span class="actor-tag">Liquidador Tarifas</span>
+                    </div>
+                </div>
+                <button style="width:100%;">Ingresar a Proceso C4</button>
+            </div>
+
+            <div class="process-card" onclick="seleccionarProceso('C7')">
+                <div>
+                    <span class="process-code">PROCESO C7</span>
+                    <h3>Atención de PQR</h3>
+                    <p>Radicación de peticiones, quejas y recursos, tipificación, proyección de respuesta y notificación.</p>
+                    <div class="actor-tags">
+                        <span class="actor-tag">Agente Atención PQR</span>
+                    </div>
+                </div>
+                <button style="width:100%;">Ingresar a Proceso C7</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASO 2: Login filtrado por el Proceso seleccionado -->
+    <div id="loginView" class="card hidden" style="max-width: 460px; margin: 40px auto;">
+        <div class="card-header">
+            <div>
+                <span id="loginProcessBadge" class="badge" style="margin-bottom:6px;">PROCESO</span>
+                <h3 id="loginProcessTitle">Iniciar Sesión</h3>
+            </div>
+            <button class="btn-outline" onclick="volverASelector()">← Procesos</button>
+        </div>
+
+        <div class="field">
+            <label>Usuario autorizado</label>
+            <input id="loginUser" placeholder="Selecciona un actor abajo o escribe tu usuario">
+        </div>
+        <div class="field">
+            <label>Contraseña</label>
+            <input id="loginPass" type="password" value="1234" placeholder="1234">
+        </div>
+        <button style="width:100%;" onclick="iniciarSesion()">Ingresar al espacio de trabajo</button>
+        <div id="loginError" style="color:var(--danger); font-size:13px; margin-top:10px;"></div>
+
+        <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+            <small style="color: var(--muted); font-weight: 600;">Actores habilitados para este proceso (clave 1234):</small>
+            <div id="listaActoresProceso" class="actor-btn-list"></div>
+        </div>
+    </div>
+
+    <!-- PASO 3: Espacio de Trabajo del Actor dentro del Proceso -->
+    <div id="appView" class="hidden">
+        <div id="panelInicioProcesos" class="card"></div>
+
+        <div id="panelMonitor" class="card">
+            <div class="card-header">
+                <h3>Estado de Tareas Automáticas (Service Tasks)</h3>
+                <button class="btn-outline" onclick="actualizarTodo()">Sincronizar estado</button>
+            </div>
+            <div id="listaServiceTasks"></div>
+        </div>
+
+        <div class="grid-main">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Mi Cola de Tareas</h3>
+                    <span id="contadorTareas" class="badge">0 pendientes</span>
+                </div>
+                <div id="listaTareas"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Formulario de Gestión</h3>
+                </div>
+                <div id="panelDetalleTarea">
+                    <p style="color: var(--muted); text-align: center; padding: 30px 0;">
+                        Selecciona una tarea de tu cola izquierda para visualizar los datos del caso y completarla.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>

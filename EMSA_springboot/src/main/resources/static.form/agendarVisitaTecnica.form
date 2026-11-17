@@ -34,19 +34,18 @@
       "disabled": true
     },
     {
-      "subtype": "date",
-      "dateLabel": "Date",
-      "label": "Fecha de la visita",
-      "type": "datetime",
+      "label": "Fecha",
+      "type": "textfield",
       "layout": {
-        "row": "Row_9edn581",
+        "row": "Row_02m773o",
         "columns": null
       },
-      "id": "Field_u33xtpl",
+      "id": "Field_0o7abpi",
       "key": "fechaVisita",
       "validate": {
         "required": true
-      }
+      },
+      "description": "(DD/MM/AAAA)"
     },
     {
       "label": "Franja horaria",
@@ -80,6 +79,6 @@
     "version": "5.39.0"
   },
   "executionPlatform": "Camunda Platform",
-  "executionPlatformVersion": "7.23.0",
+  "executionPlatformVersion": "7.20.0",
   "schemaVersion": 19
 }
