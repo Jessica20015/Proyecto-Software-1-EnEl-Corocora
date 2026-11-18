@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: ${ENEL_NEGOCIO_JDBC_URL:jdbc:h2:file:../data/enel_negocio;AUTO_SERVER=TRUE}
+    driver-class-name: ${ENEL_NEGOCIO_JDBC_DRIVER:org.h2.Driver}
+    username: ${ENEL_NEGOCIO_DB_USER:sa}
+    password: ${ENEL_NEGOCIO_DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  h2:
+    console:
+      enabled: false
+
+enel:
+  camunda:
+    base-url: ${ENEL_CAMUNDA_URL:http://localhost:8081/engine-rest}

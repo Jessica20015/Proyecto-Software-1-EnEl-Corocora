@@ -22,7 +22,7 @@
 //  <expediente> = radicado inicial (PQR-AAAA-NNNNNN), clave de negocio del caso.
 // =============================================================================
 import { pathToFileURL } from "node:url";
-const BASE_URL = process.env.CAMUNDA_URL || "http://localhost:8080/engine-rest";
+const BASE_URL = process.env.CAMUNDA_URL || "http://localhost:8081/engine-rest";
 const SCRIPT = "node c7-simular-entradas.js";
 const PATRON_SUMINISTRO = /^SUM-[0-9]{6}$/; // el mismo del formulario «Radicar PQR»
 const PATRON_RADICADO = /^PQR-\d{4}-\d+$/;

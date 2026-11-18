@@ -1,6 +1,7 @@
 package com.soft1.c4;
 
 import com.soft1.common.Fechas;
+import com.soft1.common.CoreServicesClient;
 import com.soft1.common.Vars;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
@@ -12,6 +13,12 @@ import org.springframework.stereotype.Component;
 @Component("liquidarFactura")
 public class LiquidarFactura implements JavaDelegate {
 
+    private final CoreServicesClient serviciosCore;
+
+    public LiquidarFactura(CoreServicesClient serviciosCore) {
+        this.serviciosCore = serviciosCore;
+    }
+
     @Override
     public void execute(DelegateExecution execution) {
         double cu = Vars.dbl(execution, "cuKwh", 0);
@@ -19,20 +26,14 @@ public class LiquidarFactura implements JavaDelegate {
         double factor = Vars.dbl(execution, "factorSubsidioContribucion", 0);
         double subsistencia = Vars.dbl(execution, "consumoSubsistenciaKwh", 0);
 
-        long valorEnergia = Math.round(cu * consumo);
-        long ajuste = 0;
-        if (factor < 0) {
-            ajuste = Math.round(factor * cu * Math.min(consumo, subsistencia)); // subsidio: solo subsistencia
-        } else if (factor > 0) {
-            ajuste = Math.round(factor * cu * consumo);                         // contribución: todo el consumo
-        }
-        long total = valorEnergia + ajuste;
+        CoreServicesClient.Liquidation liquidacion = serviciosCore.liquidar(cu, consumo, factor, subsistencia);
 
-        Vars.setDbl(execution, "valorEnergia", valorEnergia);
-        Vars.setDbl(execution, "valorAjusteTarifario", ajuste);
-        Vars.setDbl(execution, "valorTotal", total);
-        Vars.setStr(execution, "fechaLiquidacion", Fechas.ahora());
+        Vars.setDbl(execution, "valorEnergia", liquidacion.valorEnergia());
+        Vars.setDbl(execution, "valorAjusteTarifario", liquidacion.valorAjusteTarifario());
+        Vars.setDbl(execution, "valorTotal", liquidacion.valorTotal());
+        Vars.setStr(execution, "fechaLiquidacion", liquidacion.fechaLiquidacion());
         Vars.log("liquidar-factura", execution,
-                consumo + " kWh × " + cu + " = " + valorEnergia + "; ajuste " + ajuste + "; total " + total + " COP");
+                consumo + " kWh × " + cu + " = " + liquidacion.valorEnergia() + "; ajuste "
+                        + liquidacion.valorAjusteTarifario() + "; total " + liquidacion.valorTotal() + " COP");
     }
 }

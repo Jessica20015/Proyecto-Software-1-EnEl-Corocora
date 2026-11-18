@@ -1,3 +1,109 @@
+# ENEL · Arquitectura distribuida
+
+El repositorio conserva los modelos BPMN/DMN/forms y el motor Camunda bajo `EMSA_springboot/`. La solución
+se ejecuta como cuatro aplicaciones Spring Boot independientes y un pequeño módulo Java compartido
+(`EMSA-Dominio/`) para el esquema de solicitudes:
+
+| Aplicación | Puerto | Responsabilidad |
+|---|---:|---|
+| `EMSA_springboot/` | 8081 | Camunda 7.24, despliegue BPMN/DMN/forms, CORS y delegados |
+| `EMSA-Portal-Ciudadano/` | 8082 | Borradores C2/C7, edición, historial y radicación |
+| `EMSA-CentralSys/` | 8083 | Consulta de tareas, formulario desplegado, claim y completado |
+| `EMSA-Servicios-Core/` | 8084 | Liquidación tarifaria, órdenes técnicas y validaciones |
+
+Las tres aplicaciones de dominio comparten `enel_negocio`; Camunda usa su base independiente `enel_camunda`.
+Por defecto se crean como archivos H2 con `AUTO_SERVER=TRUE`, sin servicio externo. El motor conserva `com.soft1`;
+las aplicaciones nuevas usan `com.enel`. El Portal valida los nombres de variable de C2/C7 contra los
+formularios BPMN existentes. C2 se inicia por `restablecerServicioTrasFalla`; C7 se correlaciona con
+`MsgPQRPortal`. En ambos casos el código `SOL-...` se envía como business key y también como `codigoSolicitud`.
+Los delegates de liquidación C4 y orden técnica C2 invocan el Core por HTTP.
+
+## Arquitectura y componentes
+
+Consulte el [diagrama y descripción de arquitectura](docs/arquitectura-distribuida.md), los
+[criterios de evaluación y evidencias](docs/arquitectura-distribuida.md#evidencia-para-la-evaluacion)
+y las guías de cada componente: [motor Camunda](EMSA_springboot/README.md),
+[Portal Ciudadano](EMSA-Portal-Ciudadano/README.md), [CentralSys](EMSA-CentralSys/README.md),
+[Servicios Core](EMSA-Servicios-Core/README.md) y [biblioteca de dominio](EMSA-Dominio/README.md).
+Los componentes están organizados en este repositorio integrador; sus carpetas son módulos de construcción,
+no clones Git separados.
+
+## Ejecutar localmente
+
+Requiere Java 17+ y Maven 3.9+. En el primer clonado instale los módulos y dependencias locales del reactor:
+
+```powershell
+mvn clean install -DskipTests
+```
+
+Después abra una terminal por aplicación y arránquelas en este orden:
+
+```powershell
+cd EMSA_springboot
+mvn spring-boot:run
+```
+
+```powershell
+cd EMSA-Servicios-Core
+mvn spring-boot:run
+```
+
+```powershell
+cd EMSA-Portal-Ciudadano
+mvn spring-boot:run
+```
+
+```powershell
+cd EMSA-CentralSys
+mvn spring-boot:run
+```
+
+También se puede compilar todo el reactor desde la raíz con `mvn clean verify`. Portales: `http://localhost:8082/`
+y `http://localhost:8083/`; Camunda Tasklist/Admin: `http://localhost:8081/camunda/app/` (demo/demo);
+REST: `http://localhost:8081/engine-rest`.
+
+Los borradores no requieren Camunda. Para radicar C2/C7, el motor debe estar arriba; para ejecutar tasks de
+liquidación u órdenes técnicas también debe estar activo Core. Los archivos de base quedan dentro de `data/`
+(excluidos de Git). En cada módulo externo, `../data/enel_negocio` apunta al mismo archivo compartido.
+
+### PostgreSQL opcional
+
+`docker compose up -d` levanta PostgreSQL y crea las bases `enel_camunda` y `enel_negocio`. Para cada proceso,
+configure antes de arrancar:
+
+```powershell
+$env:ENEL_CAMUNDA_JDBC_URL='jdbc:postgresql://localhost:5432/enel_camunda'
+$env:ENEL_CAMUNDA_JDBC_DRIVER='org.postgresql.Driver'
+$env:ENEL_CAMUNDA_DB_USER='enel'
+$env:ENEL_CAMUNDA_DB_PASSWORD='enel-local'
+$env:ENEL_NEGOCIO_JDBC_URL='jdbc:postgresql://localhost:5432/enel_negocio'
+$env:ENEL_NEGOCIO_JDBC_DRIVER='org.postgresql.Driver'
+$env:ENEL_NEGOCIO_DB_USER='enel'
+$env:ENEL_NEGOCIO_DB_PASSWORD='enel-local'
+```
+
+Las URLs/credenciales de Camunda, Core y CORS también se pueden cambiar con `ENEL_CAMUNDA_URL`,
+`ENEL_SERVICIOS_CORE_URL` y `ENEL_CORS_ALLOWED_ORIGINS`. El correo se activa configurando SMTP,
+`ENEL_MAIL_FROM` y `ENEL_EMAIL_ENABLED=true`; por defecto queda apagado para que el proyecto funcione sin
+servidor de correo.
+Las cuentas Camunda de demostración conservan los usuarios y grupos definidos en el README técnico.
+
+## Verificación integral
+
+Con las cuatro aplicaciones iniciadas, ejecute desde la raíz con Python 3:
+
+```powershell
+python scripts/verify-integration.py
+```
+
+La prueba comprueba la validación del Portal, persistencia de órdenes en Core, radicación C2 y C7, business
+keys en Camunda, lectura de formulario/variables desde CentralSys, claim/completado de la tarea C2,
+sincronización del estado compartido y el delegate de liquidación C4 consumiendo el resultado de Core. Crea
+solicitudes, una orden y una instancia C4 de prueba; los registros permanecen en la base local. Para probar
+otros hosts, defina `ENEL_PORTAL_URL`, `ENEL_CENTRAL_URL`, `ENEL_CORE_URL` y `ENEL_ENGINE_URL`.
+
+---
+
 # ENEL La Corocora (EMSA) · Procesos BPM ejecutables en Camunda 7
 
 Proyecto del curso de profundización **Software 1** (Universidad de los Llanos). Los procesos de negocio
@@ -110,16 +216,18 @@ vieja de un modelo que cambió de carpeta, el mismo proceso se desplegaría dos 
 
 | Qué | Dónde |
 |---|---|
-| Portal del proyecto (C2, C4 y C7) | <http://localhost:8080/> |
-| Camunda Tasklist, Cockpit y Admin | <http://localhost:8080/camunda/app/> (usuario `demo`, clave `demo`) |
-| REST API del motor | <http://localhost:8080/engine-rest> |
+| Portal Ciudadano ENEL | <http://localhost:8082/> |
+| CentralSys de funcionarios ENEL | <http://localhost:8083/> |
+| Camunda Tasklist, Cockpit y Admin | <http://localhost:8081/camunda/app/> (usuario `demo`, clave `demo`) |
+| REST API del motor | <http://localhost:8081/engine-rest> |
 
-Al arrancar, la aplicación despliega sola **todos los BPMN, DMN y forms en un único *deployment***
+Al arrancar el motor, la aplicación despliega sola **todos los BPMN, DMN y forms en un único *deployment***
 (`META-INF/processes.xml`), así se resuelven los `formRef` y las *call activities* con *binding*
 `deployment`. Si se quieren desplegar en un Camunda 7.24 aparte (Camunda Modeler → *Deploy*), cada
 proceso debe desplegarse junto con sus DMN y forms en el mismo despliegue.
 
-La base de datos es H2 en memoria: al reiniciar se pierden las instancias.
+En la arquitectura distribuida el motor conserva el H2 local en `./data/enel_camunda`; el Portal, CentralSys y
+Core comparten `../data/enel_negocio`. Los archivos no se eliminan al reiniciar.
 
 ### Usuarios de prueba
 

@@ -8,7 +8,7 @@
 //  Uso:  node simular-entradas.js <escenario>      (sin argumento lista los escenarios)
 //        node simular-entradas.js todos
 // =============================================================================
-const BASE_URL = process.env.CAMUNDA_URL || "http://localhost:8080/engine-rest";
+const BASE_URL = process.env.CAMUNDA_URL || "http://localhost:8081/engine-rest";
 
 const D = (value) => ({ value, type: "Double" });
 const I = (value) => ({ value, type: "Integer" });

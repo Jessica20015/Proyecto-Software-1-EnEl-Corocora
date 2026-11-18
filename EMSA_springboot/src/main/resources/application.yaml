@@ -1,3 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${ENEL_CAMUNDA_JDBC_URL:jdbc:h2:file:./data/enel_camunda;AUTO_SERVER=TRUE}
+    driver-class-name: ${ENEL_CAMUNDA_JDBC_DRIVER:org.h2.Driver}
+    username: ${ENEL_CAMUNDA_DB_USER:sa}
+    password: ${ENEL_CAMUNDA_DB_PASSWORD:}
+  mail:
+    host: ${ENEL_MAIL_HOST:localhost}
+    port: ${ENEL_MAIL_PORT:25}
+    username: ${ENEL_MAIL_USERNAME:}
+    password: ${ENEL_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${ENEL_MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${ENEL_MAIL_STARTTLS:false}
+
 camunda.bpm.admin-user:
   id: demo
   password: demo
@@ -7,8 +28,8 @@ camunda.bpm.admin-user:
 camunda.bpm.filter:
   create: Todas las tareas
 
-# http://localhost:8080/ sirve el portal propio (static/index.html) en lugar de redirigir al webapp de Camunda;
-# Cockpit, Tasklist y Admin siguen en http://localhost:8080/camunda/app/
+# http://localhost:8081/ sirve el portal legado (static/index.html) en lugar de redirigir al webapp de Camunda;
+# Cockpit, Tasklist y Admin siguen en http://localhost:8081/camunda/app/
 camunda.bpm.webapp:
   index-redirect-enabled: false
 
@@ -16,6 +37,14 @@ camunda.bpm.webapp:
 # Configuración que antes se pasaba como variables de entorno a los workers JS
 # ---------------------------------------------------------------------------
 emsa:
+  cors:
+    allowed-origins: ${ENEL_CORS_ALLOWED_ORIGINS:http://localhost:8082,http://localhost:8083}
+  servicios-core:
+    base-url: ${ENEL_SERVICIOS_CORE_URL:http://localhost:8084}
+  notificaciones:
+    email:
+      enabled: ${ENEL_EMAIL_ENABLED:false}
+      from: ${ENEL_MAIL_FROM:}
   # Carpeta donde se escriben los expedientes (.jsonl) y el consecutivo de radicados
   expediente-dir: ./expediente
   c4:
