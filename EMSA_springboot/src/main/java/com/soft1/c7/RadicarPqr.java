@@ -89,6 +89,10 @@ public class RadicarPqr implements JavaDelegate {
         // el consecutivo no se devuelve si la transacción falla: se toma después de los cálculos que leen la entrada
         String radicado = expediente.siguienteRadicado();
         String expedienteId = Vars.str(execution, "expedienteId", radicado);
+        if (execution.getProcessBusinessKey() == null || execution.getProcessBusinessKey().isBlank()) {
+            String codigoSolicitud = Vars.str(execution, "codigoSolicitud", "").trim();
+            execution.setProcessBusinessKey(codigoSolicitud.isEmpty() ? expedienteId : codigoSolicitud);
+        }
 
         Vars.setStr(execution, "radicado", radicado);
         Vars.setStr(execution, "expedienteId", expedienteId);

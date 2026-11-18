@@ -1,5 +1,10 @@
 # ENEL La Corocora (EMSA) · Camunda 7 embebido en Spring Boot
 
+En la arquitectura distribuida el motor escucha en el puerto **8081** (la configuración anterior usaba
+8080). La guía para compilar e iniciar las cuatro aplicaciones está en el
+[README de la raíz](../README.md#enel--arquitectura-distribuida). `ENEL_CAMUNDA_JDBC_URL` permite cambiar
+el H2 local por PostgreSQL.
+
 Integración de los procesos **C2**, **C4** y **C7** del repositorio
 `Jessica20015/Avance-proyecto-Software` en **una sola aplicación Spring Boot** con el motor de
 Camunda embebido, siguiendo la estructura del proyecto de ejemplo (`EMSA proyect`).
@@ -22,15 +27,17 @@ mvn clean spring-boot:run
 
 (`clean` evita que una copia vieja de los modelos en `target/classes` se despliegue junto con la nueva.)
 
-* Portal del proyecto (C2, C4 y C7): <http://localhost:8080/>
-* Camunda Cockpit / Tasklist / Admin: <http://localhost:8080/camunda/app/> — usuario `demo`, clave `demo`
-* REST API: <http://localhost:8080/engine-rest>
+* Portal Ciudadano ENEL: <http://localhost:8082/>
+* CentralSys de funcionarios ENEL: <http://localhost:8083/>
+* Camunda Cockpit / Tasklist / Admin: <http://localhost:8081/camunda/app/> — usuario `demo`, clave `demo`
+* REST API: <http://localhost:8081/engine-rest>
 * Al arrancar se despliegan solos los 6 procesos, 5 DMN y 20 formularios (un único *deployment*,
   como exige la regla de despliegue del README original).
 * Tasklist trae tres filtros: «Tareas de mis grupos», «Mis tareas» y «Todas las tareas». Los usuarios de
   prueba de cada carril están en el [README principal](../README.md#usuarios-de-prueba) (clave `1234`).
 
-> La base de datos es H2 en memoria (igual que el ejemplo): al reiniciar se pierden las instancias.
+> En la arquitectura distribuida el motor usa H2 local en `./data/enel_camunda`; al reiniciar no se
+> eliminan las instancias ni el historial.
 > Los expedientes `.jsonl` y el consecutivo de radicados sí quedan en disco, en `./expediente/`.
 > Para empezar una demostración desde cero, borre esa carpeta con la aplicación detenida.
 
@@ -172,7 +179,7 @@ Reemplaza las variables de entorno de los workers:
 | carpeta `expediente/` de cada worker | `emsa.expediente-dir` |
 
 Además: `camunda.bpm.filter.create` crea el filtro «Todas las tareas» de Tasklist y
-`camunda.bpm.webapp.index-redirect-enabled: false` hace que `http://localhost:8080/` abra el portal.
+`camunda.bpm.webapp.index-redirect-enabled: false` evita redirigir la raíz del motor a Tasklist.
 
 ## Diferencias de comportamiento a tener en cuenta
 

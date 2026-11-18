@@ -123,10 +123,7 @@
       <bpmn:outgoing>Flow_04</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:serviceTask id="Activity_RadicarPQR" name="Radicar la PQR y asignar radicado" camunda:delegateExpression="${radicarPqr}">
-      <bpmn:documentation>Primera actividad del perfil de C7: radicar la petición y asignar radicado. Asigna radicado único y expediente (business key), calcula los meses desde la expedición de la factura reclamada y detecta si es una reapertura por la misma causa (mismo suministro y asunto cerrado hace 30 días o menos). Si llega un recurso, radica el recurso en el mismo expediente.</bpmn:documentation>
-      <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setProcessBusinessKey(expedienteId)}" event="end" />
-      </bpmn:extensionElements>
+      <bpmn:documentation>Primera actividad del perfil de C7: radicar la petición y asignar radicado. Asigna radicado único y expediente, conserva como business key el código de solicitud emitido por el Portal Ciudadano, calcula los meses desde la expedición de la factura reclamada y detecta si es una reapertura por la misma causa (mismo suministro y asunto cerrado hace 30 días o menos). Si llega un recurso, radica el recurso en el mismo expediente.</bpmn:documentation>
       <bpmn:incoming>Flow_04</bpmn:incoming>
       <bpmn:outgoing>Flow_05</bpmn:outgoing>
     </bpmn:serviceTask>

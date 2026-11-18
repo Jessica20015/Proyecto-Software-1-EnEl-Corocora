@@ -1,7 +1,7 @@
 {
   "name": "emsa-simuladores",
   "version": "1.0.0",
-  "description": "Simuladores de entradas para C4 y C7. Llaman a la REST API del motor embebido (http://localhost:8080/engine-rest). Requiere Node 18+; no tiene dependencias.",
+  "description": "Simuladores de entradas para C4 y C7. Llaman a la REST API del motor embebido (http://localhost:8081/engine-rest). Requiere Node 18+; no tiene dependencias.",
   "type": "module",
   "scripts": {
     "c4": "node c4-simular-entradas.js",

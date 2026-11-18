@@ -1,2 +1,7 @@
 expediente/
 .idea/
+**/target/
+data/
+**/data/
+*.mv.db
+*.trace.db

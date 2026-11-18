@@ -4,7 +4,7 @@ import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.soft1")
 @EnableProcessApplication
 public class Application {
 
@@ -12,4 +12,3 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 }
-

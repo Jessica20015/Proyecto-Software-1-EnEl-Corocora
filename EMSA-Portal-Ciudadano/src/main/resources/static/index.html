@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ENEL · Portal Ciudadano</title>
+  <style>
+    body{font:16px system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#172554;background:#f8fafc}
+    main,section{background:white;border:1px solid #dbeafe;border-radius:12px;padding:1.25rem;margin:1rem 0}
+    label{display:block;font-weight:600;margin:.8rem 0 .25rem}select,input,textarea{font:inherit;width:100%;padding:.55rem;border:1px solid #94a3b8;border-radius:6px;box-sizing:border-box}
+    input[type=checkbox]{width:auto;margin-right:.5rem}textarea{min-height:100px}button{margin:.5rem .4rem .5rem 0;padding:.6rem 1rem;background:#075985;color:white;border:0;border-radius:6px;cursor:pointer}
+    button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.8rem}
+    .field{background:#f8fafc;padding:.8rem;border-radius:8px}.field label{margin:0 0 .35rem}
+    li{margin:.5rem 0}output{display:block;white-space:pre-wrap;margin:.8rem 0;color:#7f1d1d}
+  </style>
+</head>
+<body>
+<h1>ENEL · Portal Ciudadano</h1>
+<p>Guarde solicitudes en borrador, edítelas y radíquelas cuando estén listas.</p>
+<main>
+  <label for="proceso">Proceso</label>
+  <select id="proceso"><option value="C2">C2 · Reporte de falla eléctrica</option><option value="C7">C7 · Atención de PQR</option></select>
+  <button id="nuevo">Crear borrador</button>
+  <label for="codigo">Código de solicitud</label><input id="codigo" readonly>
+  <label for="estado">Estado</label><input id="estado" readonly>
+  <div id="campos" class="fields" aria-live="polite"></div>
+  <div><button id="guardar">Guardar cambios</button><button id="radicar">Confirmar y radicar</button></div>
+  <output id="mensaje" aria-live="polite"></output>
+</main>
+<section><h2>Historial de solicitudes</h2><ul id="historial"></ul></section>
+<script src="/portal.js"></script>
+</body>
+</html>

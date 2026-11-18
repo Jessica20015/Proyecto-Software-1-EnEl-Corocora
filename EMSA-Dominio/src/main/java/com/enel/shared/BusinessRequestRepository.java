@@ -1,0 +1,9 @@
+package com.enel.shared;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BusinessRequestRepository extends JpaRepository<BusinessRequest, String> {
+    List<BusinessRequest> findByEstadoOrderByCreadoEnDesc(String estado);
+}
