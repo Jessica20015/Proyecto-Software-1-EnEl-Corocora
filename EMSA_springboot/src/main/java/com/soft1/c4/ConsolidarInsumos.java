@@ -8,6 +8,8 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * C4 · Service Task "Consolidar insumos de facturación" (Activity_ConsolidarInsumos).
@@ -23,8 +25,12 @@ public class ConsolidarInsumos implements JavaDelegate {
         this.config = config;
     }
 
+    private static final Pattern SUMINISTRO = Pattern.compile("SUM-\\d{6}");
+    private static final Pattern PERIODO = Pattern.compile("\\d{4}-(0[1-9]|1[0-2])");
+
     @Override
     public void execute(DelegateExecution execution) {
+        validarEntrada(execution);
         String periodo = Vars.str(execution, "periodo");
         C4Config.Regla regla = config.regla(periodo);
         if (regla == null) {
@@ -80,5 +86,29 @@ public class ConsolidarInsumos implements JavaDelegate {
         Vars.log("consolidar-insumos", execution, String.format(
                 "consumo %s kWh, promedio %s kWh, desviación %.2f %%, regla %s",
                 consumo, promedio, desviacion, regla.versionRegla()));
+    }
+
+    /**
+     * Validación de la entrada del caso (consumo validado de C3, refacturación de C6/C7 o consumo corregido).
+     * Corre en la misma transacción del mensaje: si un dato no tiene el tipo o el formato esperado, el mensaje
+     * se rechaza con la lista de errores y no se crea (ni avanza) la instancia. Antes, un consumo no numérico
+     * se convertía en 0 kWh sin avisar.
+     */
+    private static void validarEntrada(DelegateExecution execution) {
+        // El estrato socioeconómico solo aplica al uso residencial (1 a 6); en los demás usos la tarifa no lo
+        // considera y suele llegar 0 («no aplica»).
+        boolean residencial = "RESIDENCIAL".equals(execution.getVariable("usoServicio"))
+                || execution.getVariable("usoServicio") == null;
+        new ValidacionC4(execution, "Entrada de C4")
+                .patron("codigoSuministro", SUMINISTRO, "SUM-000000", true)
+                .patron("periodo", PERIODO, "AAAA-MM", true)
+                .numero("consumoKwh", 0.0, null, false, true)
+                .numero("consumoPromedioKwh", 0.0, null, false, false)
+                .opcion("tipoLectura", Set.of("REAL", "ESTIMADA"), false)
+                .opcion("usoServicio", ValidacionC4.USOS_SERVICIO, false)
+                .numero("estrato", residencial ? 1.0 : 0.0, 6.0, true, false)
+                .numero("estimacionesConsecutivas", 0.0, null, true, false)
+                .numero("devolucionesC3", 0.0, null, true, false)
+                .verificar();
     }
 }

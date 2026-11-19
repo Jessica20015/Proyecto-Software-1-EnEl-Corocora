@@ -177,6 +177,11 @@ Todos los procesos viven en la aplicación [`EMSA_springboot`](EMSA_springboot).
 - **Expediente de facturación:** `expediente/expediente-facturacion.jsonl` (carpeta `emsa.expediente-dir`) guarda, por factura, un registro
   `EMISION` (lectura, regla tarifaria, liquidación y correcciones) y uno `ENTREGA` (canal, soporte, fecha y
   ciclo de facturación en horas). Ambos se escriben solo si la transacción del motor se confirma.
+- **Validación de entradas en el servidor:** el inicio de C4 rechaza datos con tipo o formato incorrecto
+  (`codigoSuministro` SUM-000000, `periodo` AAAA-MM, `consumoKwh` numérico ≥ 0, uso, estrato 1–6 en uso
+  residencial y 0–6 en los demás…) y cada
+  tarea de C4 y C4.1 repite al completarse las reglas de su `.form` (valores permitidos, obligatorios,
+  longitudes y rangos), aunque se complete por REST o desde CentralSys.
 
 ### 3. C7 · Atender una PQR del usuario
 
