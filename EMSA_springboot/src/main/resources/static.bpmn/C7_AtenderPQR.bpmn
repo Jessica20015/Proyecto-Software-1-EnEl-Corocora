@@ -160,6 +160,9 @@
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="Activity_TipificarManual" name="Tipificar y enrutar la PQR" camunda:formRef="TipificarEnrutarPQR" camunda:formRefBinding="deployment" camunda:candidateGroups="orientadores-pqr">
       <bpmn:documentation>El orientador y enrutador de usuarios corrige el tipo y el asunto cuando la regla no los reconoce (asunto «Otro» o combinación no prevista). Después la PQR vuelve a la tabla DMN.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:taskListener delegateExpression="${validarFormularioC7}" event="complete" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_09</bpmn:incoming>
       <bpmn:outgoing>Flow_10</bpmn:outgoing>
     </bpmn:userTask>
@@ -235,6 +238,7 @@
         <bpmn:extensionElements>
           <camunda:executionListener expression="${execution.removeVariable('resultadoRevision')}" event="end" />
           <camunda:executionListener expression="${execution.removeVariable('observacionesRevision')}" event="end" />
+          <camunda:taskListener delegateExpression="${validarFormularioC7}" event="complete" />
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_23</bpmn:incoming>
         <bpmn:outgoing>Flow_24</bpmn:outgoing>
@@ -251,6 +255,9 @@
       </bpmn:exclusiveGateway>
       <bpmn:userTask id="Activity_RevisarJuridica" name="Revisar el debido proceso del proyecto" camunda:formRef="RevisarProyectoRespuesta" camunda:formRefBinding="deployment" camunda:candidateGroups="juridica-pqr">
         <bpmn:documentation>Ninguna decisión desfavorable se emite sin revisión humana de debido proceso (§10). También se revisan las respuestas parciales, las reaperturas por la misma causa y los recursos.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:taskListener delegateExpression="${validarFormularioC7}" event="complete" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_25</bpmn:incoming>
         <bpmn:outgoing>Flow_27</bpmn:outgoing>
       </bpmn:userTask>
@@ -313,6 +320,7 @@
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#39;sentidoDecision&#39;, &#39;FAVORABLE&#39;)}" event="end" />
         <camunda:executionListener expression="${execution.setVariable(&#39;silencioPositivo&#39;, true)}" event="end" />
+        <camunda:taskListener delegateExpression="${validarFormularioC7}" event="complete" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_33</bpmn:incoming>
       <bpmn:outgoing>Flow_34</bpmn:outgoing>

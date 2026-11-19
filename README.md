@@ -206,6 +206,11 @@ Todos los procesos viven en la aplicación [`EMSA_springboot`](EMSA_springboot).
   (abre el formulario `RadicarPQR` ya diligenciado). En el portal: proceso C7 con el usuario `orientador1`.
   Las PQR del portal virtual llegan por el mensaje `MsgPQRPortal`
   (`node c7-simular-entradas.js reclamo-portal`).
+- **Validación de entradas en el servidor:** la radicación (formulario, portal o recurso) rechaza datos con
+  tipo o formato incorrecto (tipo, asunto y calidad permitidos, `codigoSuministro` SUM-000000, fecha de la
+  factura AAAA-MM-DD, textos mínimos, booleanos reales, autorización de datos y correo si se autoriza la
+  notificación electrónica) y cada tarea de C7 y C7.1 repite al completarse las reglas de su `.form`,
+  aunque se complete por REST o desde CentralSys.
 
 ![C7 · Atender una PQR del usuario](docs/C7_AtenderPQR/C7_AtenderPQR.png)
 

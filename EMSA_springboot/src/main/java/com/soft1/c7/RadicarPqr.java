@@ -15,6 +15,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import static com.soft1.c7.C7Expediente.datos;
 
@@ -36,6 +38,7 @@ public class RadicarPqr implements JavaDelegate {
     @Override
     @SuppressWarnings("unchecked")
     public void execute(DelegateExecution execution) {
+        validarEntrada(execution);
         // la instancia sale de tipoPQR (no de la variable "instancia", que en un recurso aún dice PRIMERA):
         // el recurso por mensaje llega con tipoPQR = RECURSO_REPOSICION (listener de Event_RecursoRecibido)
         String tipo = Vars.str(execution, "tipoPQR");
@@ -161,5 +164,42 @@ public class RadicarPqr implements JavaDelegate {
                         "apelacionSubsidiaria", Vars.bool(execution, "apelacionSubsidiaria", false)));
         Vars.log("radicar-pqr", execution, radicado + " (" + instancia + ", " + tipo + "/" + Vars.str(execution, "asunto")
                 + ") " + (esReapertura ? "· REAPERTURA de " + radicadoAnterior : ""));
+    }
+
+    private static final Set<String> CANALES = Set.of("PRESENCIAL", "TELEFONICO", "VIRTUAL");
+    private static final Set<String> ASUNTOS = Set.of("FACTURACION", "MEDICION", "SUSPENSION_RECONEXION",
+            "RECUPERACION_CONSUMOS", "CALIDAD_CONTINUIDAD", "ATENCION_SERVICIO", "OTRO");
+    private static final Set<String> CALIDADES = Set.of("SUSCRIPTOR", "USUARIO", "TERCERO_AUTORIZADO");
+    private static final Pattern SUMINISTRO = Pattern.compile("SUM-[0-9]{6}");
+    /** AAAA-MM-DD como en el formulario; se tolera una hora ISO al final (la fecha se toma de los 10 primeros caracteres). */
+    private static final Pattern FECHA = Pattern.compile("[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(T.*)?");
+
+    /**
+     * Validación de la entrada de la PQR (formulario RadicarPQR, mensaje del portal o recurso). Corre en la misma
+     * transacción del inicio: si un dato no tiene el tipo o el formato esperado, la PQR no se radica, no se gasta
+     * un consecutivo y quien la envió recibe la lista de errores. Antes, una fecha inválida se tomaba como 0 meses
+     * y un booleano mal escrito como «no».
+     */
+    private static void validarEntrada(DelegateExecution execution) {
+        ValidacionC7 v = new ValidacionC7(execution, "Radicación de la PQR")
+                .opcion("canalRadicacion", CANALES, false)
+                .opcion("tipoPQR", ValidarFormularioC7.TIPOS_PQR, true)
+                .opcion("asunto", ASUNTOS, true)
+                .patron("codigoSuministro", SUMINISTRO, "SUM-000000", true)
+                .opcion("calidadPeticionario", CALIDADES, true)
+                .texto("nombrePeticionario", 3)
+                .texto("descripcionPQR", 20)
+                .texto("pretension", 10)
+                .texto("direccionNotificacion", 1)
+                .patron("fechaExpedicionFactura", FECHA, "AAAA-MM-DD", false)
+                .booleano("autorizaTratamientoDatos", true, true)
+                .booleano("autorizaNotificacionElectronica", false, false)
+                .booleano("requiereAccesibilidad", false, false)
+                .booleano("apelacionSubsidiaria", false, false);
+        // con notificación electrónica autorizada, el correo es obligatorio (sin él no hay a dónde notificar)
+        if (Boolean.TRUE.equals(execution.getVariable("autorizaNotificacionElectronica"))) {
+            v.correo("correoNotificacion");
+        }
+        v.verificar();
     }
 }
