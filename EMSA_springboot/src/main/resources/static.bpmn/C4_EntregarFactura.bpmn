@@ -87,9 +87,12 @@
       <bpmn:outgoing>Flow_E14</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:serviceTask id="Activity_RegistrarPrueba" name="Registrar prueba de entrega" camunda:delegateExpression="${registrarPruebaEntrega}">
-      <bpmn:documentation>Cierra el indicador 'ciclo de facturación' (t3 = entrega) y alimenta el 'costo por factura entregada'.</bpmn:documentation>
+      <bpmn:documentation>Cierra el indicador 'ciclo de facturación' (t3 = entrega) y alimenta el 'costo por factura entregada'. Deja la prueba de entrega (fecha-hora, canal, soporte y estado) en el expediente de facturación, junto al registro de emisión (regla de trazabilidad 8.4).</bpmn:documentation>
       <bpmn:incoming>Flow_E14</bpmn:incoming>
       <bpmn:outgoing>Flow_E15</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_RegistrarPrueba_Expediente">
+        <bpmn:targetRef>DataStoreReference_ExpedienteEntrega</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
     <bpmn:endEvent id="Event_PruebaRegistrada" name="Prueba de entrega registrada">
       <bpmn:incoming>Flow_E15</bpmn:incoming>
@@ -113,6 +116,7 @@
     <bpmn:sequenceFlow id="Flow_E13" sourceRef="Activity_GestionarEntregaFallida" targetRef="Gateway_JoinRegistro" />
     <bpmn:sequenceFlow id="Flow_E14" sourceRef="Gateway_JoinRegistro" targetRef="Activity_RegistrarPrueba" />
     <bpmn:sequenceFlow id="Flow_E15" sourceRef="Activity_RegistrarPrueba" targetRef="Event_PruebaRegistrada" />
+    <bpmn:dataStoreReference id="DataStoreReference_ExpedienteEntrega" name="Expediente de facturación" />
     <bpmn:textAnnotation id="TextAnnotation_Prueba">
       <bpmn:text>Prueba de entrega: fecha-hora, canal y soporte. Cierra el indicador 'ciclo de facturación' (t3) y alimenta el 'costo por factura entregada'.</bpmn:text>
     </bpmn:textAnnotation>
@@ -285,11 +289,21 @@
         <di:waypoint x="1502" y="230" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_Prueba_di" bpmnElement="TextAnnotation_Prueba">
-        <dc:Bounds x="1300" y="320" width="300" height="70" />
+        <dc:Bounds x="1300" y="420" width="300" height="70" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_Prueba_di" bpmnElement="Association_Prueba">
-        <di:waypoint x="1400" y="320" />
+        <di:waypoint x="1400" y="420" />
         <di:waypoint x="1390" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataStoreReference_ExpedienteEntrega_di" bpmnElement="DataStoreReference_ExpedienteEntrega">
+        <dc:Bounds x="1497" y="310" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1480" y="367" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_RegistrarPrueba_Expediente_di" bpmnElement="DataOutputAssociation_RegistrarPrueba_Expediente">
+        <di:waypoint x="1430" y="260" />
+        <di:waypoint x="1497" y="318" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

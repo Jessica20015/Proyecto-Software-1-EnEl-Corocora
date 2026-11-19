@@ -172,7 +172,11 @@ Todos los procesos viven en la aplicación [`EMSA_springboot`](EMSA_springboot).
   (`MsgConsumoValidado`, la lectura validada que envía C3), no desde un formulario:
   - Simulador: `cd EMSA_springboot/simuladores` y `node c4-simular-entradas.js normal`
     (sin argumentos lista los escenarios).
-  - Portal: proceso C4 con el usuario `analista1` → «Simular Lectura Validada».
+  - Portal: proceso C4 con el usuario `analista1` → «Simular Lectura Validada». Las tareas de C4 se
+    atienden con sus formularios desplegados (`.form`), igual que en Tasklist.
+- **Expediente de facturación:** `expediente/expediente-facturacion.jsonl` (carpeta `emsa.expediente-dir`) guarda, por factura, un registro
+  `EMISION` (lectura, regla tarifaria, liquidación y correcciones) y uno `ENTREGA` (canal, soporte, fecha y
+  ciclo de facturación en horas). Ambos se escriben solo si la transacción del motor se confirma.
 
 ### 3. C7 · Atender una PQR del usuario
 
