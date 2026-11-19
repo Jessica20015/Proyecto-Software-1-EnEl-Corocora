@@ -3,33 +3,107 @@ let variablesActuales = {};
 const mensaje = document.querySelector("#mensaje");
 const formulario = document.querySelector("#formulario");
 
+const NOMBRES_GRUPO = {
+  "operador-control": "Centro de Control", "cuadrilla": "Cuadrillas", "coordinador-zona": "Coordinación de Zona",
+  "analistas-facturacion": "Analistas de Facturación", "calidad-facturacion": "Calidad de Facturación",
+  "liquidadores-tarifarios": "Tarifas", "orientadores-pqr": "Orientación PQR", "analistas-pqr": "Analistas PQR",
+  "juridica-pqr": "Jurídica PQR"
+};
+
 async function request(path, options = {}) {
   const response = await fetch(path, {
     ...options,
     headers: { "Content-Type": "application/json", ...(options.headers || {}) }
   });
   const text = await response.text();
-  const body = text ? JSON.parse(text) : null;
+  let body = null;
+  try { body = text ? JSON.parse(text) : null; } catch { body = null; }
+  if (response.status === 401 && !path.startsWith("/api/sesion")) {
+    mostrarLogin("Su sesión terminó. Ingrese de nuevo.");
+  }
   if (!response.ok) throw new Error(body?.message || `HTTP ${response.status}`);
   return body;
+}
+
+// ------------------------------- sesión -------------------------------
+function mostrarLogin(texto = "") {
+  tareaActual = null;
+  document.querySelector("#app").hidden = true;
+  document.querySelector("#login").hidden = false;
+  document.querySelector("#mensajeLogin").textContent = texto;
+  document.querySelector("#clave").value = "";
+}
+
+function mostrarApp(funcionario) {
+  document.querySelector("#login").hidden = true;
+  document.querySelector("#app").hidden = false;
+  document.querySelector("#funcionario").textContent = funcionario.usuario;
+  const carriles = document.querySelector("#carriles");
+  carriles.replaceChildren(...funcionario.grupos.map(g => {
+    const s = document.createElement("span");
+    s.className = "etiqueta";
+    s.textContent = NOMBRES_GRUPO[g] || g;
+    return s;
+  }));
+  // solo los carriles del funcionario
+  document.querySelector("#grupo").replaceChildren(...funcionario.grupos.map(g => new Option(NOMBRES_GRUPO[g] || g, g)));
+  limpiarFormulario();
+  cargarTareas();
+}
+
+document.querySelector("#formLogin").onsubmit = async (evento) => {
+  evento.preventDefault();
+  try {
+    const funcionario = await request("/api/sesion", {
+      method: "POST",
+      body: JSON.stringify({
+        username: document.querySelector("#usuario").value.trim(),
+        password: document.querySelector("#clave").value
+      })
+    });
+    mostrarApp(funcionario);
+  } catch (error) { document.querySelector("#mensajeLogin").textContent = error.message; }
+};
+
+document.querySelector("#salir").onclick = async () => {
+  try { await request("/api/sesion", { method: "DELETE" }); } catch { /* la sesión ya no existía */ }
+  mostrarLogin("Sesión cerrada.");
+};
+
+// ------------------------------- tareas -------------------------------
+function pintarTareas(tareas, etiqueta) {
+  const lista = document.querySelector("#tareas");
+  lista.replaceChildren();
+  for (const tarea of tareas) {
+    const item = document.createElement("li");
+    const boton = document.createElement("button");
+    boton.textContent = `${tarea.name} · ${tarea.id}${tarea.assignee ? " · reclamada por " + tarea.assignee : ""}`;
+    boton.onclick = () => seleccionarTarea(tarea);
+    item.append(boton);
+    lista.append(item);
+  }
+  return `${tareas.length} ${etiqueta}.`;
 }
 
 async function cargarTareas() {
   try {
     const grupo = document.querySelector("#grupo").value;
     const tareas = await request(`/task?candidateGroup=${encodeURIComponent(grupo)}`);
-    const lista = document.querySelector("#tareas");
-    lista.replaceChildren();
-    for (const tarea of tareas) {
-      const item = document.createElement("li");
-      const boton = document.createElement("button");
-      boton.textContent = `${tarea.name} · ${tarea.id}`;
-      boton.onclick = () => seleccionarTarea(tarea);
-      item.append(boton);
-      lista.append(item);
-    }
-    mensaje.textContent = `${tareas.length} tarea(s) disponibles.`;
+    mensaje.textContent = pintarTareas(tareas, "tarea(s) sin reclamar en el carril");
   } catch (error) { mensaje.textContent = error.message; }
+}
+
+async function cargarMisTareas(prefijo = "") {
+  try {
+    const tareas = await request("/task/mias");
+    mensaje.textContent = prefijo + pintarTareas(tareas, "tarea(s) reclamadas por usted");
+  } catch (error) { mensaje.textContent = error.message; }
+}
+
+function limpiarFormulario() {
+  tareaActual = null;
+  formulario.replaceChildren();
+  document.querySelector("#titulo").textContent = "Seleccione una tarea";
 }
 
 function valorVariable(key, component) {
@@ -181,16 +255,13 @@ async function seleccionarTarea(tarea) {
 }
 
 document.querySelector("#cargar").onclick = cargarTareas;
+document.querySelector("#mias").onclick = () => cargarMisTareas();
+// La tarea se reclama a nombre del funcionario con sesión: el servidor toma el usuario de la sesión
 document.querySelector("#reclamar").onclick = async () => {
   try {
     if (!tareaActual) throw new Error("Seleccione una tarea.");
-    const username = prompt("Usuario Camunda autorizado para este carril:");
-    if (!username) return;
-    await request(`/task/${encodeURIComponent(tareaActual.id)}/claim`, {
-      method: "POST", body: JSON.stringify({ username })
-    });
-    mensaje.textContent = "Tarea reclamada.";
-    await cargarTareas();
+    await request(`/task/${encodeURIComponent(tareaActual.id)}/claim`, { method: "POST" });
+    await cargarMisTareas("Tarea reclamada. ");
   } catch (error) { mensaje.textContent = error.message; }
 };
 document.querySelector("#completar").onclick = async () => {
@@ -199,11 +270,10 @@ document.querySelector("#completar").onclick = async () => {
     await request(`/task/${encodeURIComponent(tareaActual.id)}/complete`, {
       method: "POST", body: JSON.stringify({ variables: leerVariablesFormulario() })
     });
-    mensaje.textContent = "Tarea completada y estado de la solicitud sincronizado.";
-    tareaActual = null;
-    formulario.replaceChildren();
-    document.querySelector("#titulo").textContent = "Seleccione una tarea";
-    await cargarTareas();
+    limpiarFormulario();
+    await cargarMisTareas("Tarea completada y estado de la solicitud sincronizado. ");
   } catch (error) { mensaje.textContent = error.message; }
 };
-cargarTareas();
+
+// Al abrir la página: si ya hay sesión se entra directo; si no, pantalla de ingreso
+request("/api/sesion").then(mostrarApp).catch(() => mostrarLogin());

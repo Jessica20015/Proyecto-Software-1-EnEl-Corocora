@@ -13,25 +13,42 @@
     #formulario fieldset{border:1px solid #cbd5e1;border-radius:8px;padding:.8rem}
     #formulario legend{font-weight:700}#formulario label{display:block;font-weight:600;margin:.5rem 0 .25rem}
     #formulario input[type=checkbox]{width:auto;margin-right:.5rem}#formulario input:disabled,#formulario select:disabled,#formulario textarea:disabled{opacity:.6}
+    [hidden]{display:none!important}
+    #login{max-width:420px;margin:3rem auto}#login label{display:block;font-weight:600;margin:.8rem 0 .3rem}
+    #barra{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+    .etiqueta{font-size:.8rem;background:#e0f2fe;color:#075985;border-radius:999px;padding:.1rem .6rem;margin-left:.3rem}
+    button.secundario{background:white;color:#075985;border:1px solid #075985}
   </style>
 </head>
 <body>
 <h1>ENEL · Sistema interno de funcionarios</h1>
-<main>
-  <label for="grupo">Departamento / carril</label>
-  <select id="grupo">
-    <option value="operador-control">Centro de Control</option><option value="cuadrilla">Cuadrillas</option>
-    <option value="coordinador-zona">Coordinación de Zona</option><option value="analistas-facturacion">Analistas de Facturación</option>
-    <option value="calidad-facturacion">Calidad de Facturación</option><option value="liquidadores-tarifarios">Tarifas</option>
-    <option value="orientadores-pqr">Orientación PQR</option><option value="analistas-pqr">Analistas PQR</option>
-    <option value="juridica-pqr">Jurídica PQR</option>
-  </select><button id="cargar">Consultar tareas</button>
-  <ul id="tareas"></ul><output id="mensaje" aria-live="polite"></output>
+
+<main id="login">
+  <h2>Ingreso de funcionarios</h2>
+  <form id="formLogin">
+    <label for="usuario">Usuario</label><input id="usuario" autocomplete="username" required>
+    <label for="clave">Clave</label><input id="clave" type="password" autocomplete="current-password" required>
+    <button type="submit">Ingresar</button>
+  </form>
+  <output id="mensajeLogin" aria-live="polite"></output>
 </main>
-<section><h2 id="titulo">Seleccione una tarea</h2>
-  <h3>Formulario oficial desplegado por Camunda</h3><form id="formulario"></form>
-  <div><button id="reclamar">Reclamar tarea</button><button id="completar">Completar tarea</button></div>
-</section>
+
+<div id="app" hidden>
+  <main>
+    <div id="barra">
+      <div><strong id="funcionario"></strong><span id="carriles"></span></div>
+      <button id="salir" class="secundario">Cerrar sesión</button>
+    </div>
+    <label for="grupo">Departamento / carril</label>
+    <select id="grupo"></select>
+    <button id="cargar">Consultar tareas</button><button id="mias" class="secundario">Mis tareas</button>
+    <ul id="tareas"></ul><output id="mensaje" aria-live="polite"></output>
+  </main>
+  <section><h2 id="titulo">Seleccione una tarea</h2>
+    <h3>Formulario oficial desplegado por Camunda</h3><form id="formulario"></form>
+    <div><button id="reclamar">Reclamar tarea</button><button id="completar">Completar tarea</button></div>
+  </section>
+</div>
 <script src="/central.js"></script>
 </body>
 </html>

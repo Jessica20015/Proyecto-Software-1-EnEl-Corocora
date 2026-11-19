@@ -9,9 +9,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class CamundaTaskClient {
+
+    private static final ParameterizedTypeReference<List<Map<String, Object>>> LISTA =
+            new ParameterizedTypeReference<>() {};
 
     private final RestTemplate restTemplate;
     private final String baseUrl;
@@ -26,8 +30,40 @@ public class CamundaTaskClient {
                 .queryParam("candidateGroup", grupo)
                 .queryParam("active", true)
                 .build().encode().toUriString();
-        return restTemplate.exchange(uri, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}).getBody();
+        return restTemplate.exchange(uri, HttpMethod.GET, null, LISTA).getBody();
+    }
+
+    /** Tareas activas asignadas (reclamadas) por el usuario. */
+    public List<Map<String, Object>> tareasAsignadas(String usuario) {
+        String uri = UriComponentsBuilder.fromUriString(baseUrl + "/task")
+                .queryParam("assignee", usuario)
+                .queryParam("active", true)
+                .build().encode().toUriString();
+        return restTemplate.exchange(uri, HttpMethod.GET, null, LISTA).getBody();
+    }
+
+    /** Grupos candidatos de la tarea (camunda:candidateGroups). */
+    public List<String> gruposCandidatos(String taskId) {
+        String uri = UriComponentsBuilder.fromUriString(baseUrl + "/task/{id}/identity-links")
+                .queryParam("type", "candidate").buildAndExpand(taskId).encode().toUriString();
+        List<Map<String, Object>> enlaces = restTemplate.exchange(uri, HttpMethod.GET, null, LISTA).getBody();
+        return enlaces == null ? List.of() : enlaces.stream()
+                .map(e -> e.get("groupId")).filter(Objects::nonNull).map(Object::toString).toList();
+    }
+
+    /** Verifica usuario y clave contra el servicio de identidad del motor. */
+    public boolean verificar(String usuario, String clave) {
+        Map<?, ?> r = restTemplate.postForObject(baseUrl + "/identity/verify",
+                Map.of("username", usuario, "password", clave), Map.class);
+        return r != null && Boolean.TRUE.equals(r.get("authenticated"));
+    }
+
+    /** Identificadores de los grupos a los que pertenece el usuario. */
+    public List<String> grupos(String usuario) {
+        String uri = UriComponentsBuilder.fromUriString(baseUrl + "/group")
+                .queryParam("member", usuario).build().encode().toUriString();
+        List<Map<String, Object>> grupos = restTemplate.exchange(uri, HttpMethod.GET, null, LISTA).getBody();
+        return grupos == null ? List.of() : grupos.stream().map(g -> String.valueOf(g.get("id"))).toList();
     }
 
     public Map<String, Object> formulario(String taskId) {

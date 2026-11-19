@@ -78,6 +78,10 @@
       <bpmn:outgoing>Flow_E11</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="Activity_GestionarEntregaFallida" name="Gestionar entrega fallida" camunda:formRef="GestionarEntregaFallida" camunda:formRefBinding="deployment" camunda:candidateGroups="analistas-facturacion">
+      <bpmn:documentation>El analista gestiona la entrega por un medio alterno y registra el soporte. Un task listener valida en el servidor los datos del formulario antes de completar.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:taskListener delegateExpression="${validarFormularioC4}" event="complete" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_E11</bpmn:incoming>
       <bpmn:outgoing>Flow_E13</bpmn:outgoing>
     </bpmn:userTask>
