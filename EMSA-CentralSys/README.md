@@ -8,11 +8,28 @@ Control, Cuadrillas, Coordinación de Zona, Facturación y PQR. La interfaz est�
 
 | Método y ruta | Función |
 |---|---|
-| `GET /task?candidateGroup={grupo}` | Lista tareas activas para uno de los grupos de negocio permitidos. |
+| `POST /api/sesion` | Inicia sesión con `{"username":"...","password":"..."}` (usuarios de Camunda). Devuelve el funcionario y sus carriles. |
+| `GET /api/sesion` · `DELETE /api/sesion` | Consulta la sesión actual · la cierra. |
+| `GET /task?candidateGroup={grupo}` | Lista las tareas sin reclamar de uno de **sus** carriles. |
+| `GET /task/mias` | Lista las tareas que el funcionario reclamó. |
 | `GET /task/{id}/deployed-form` | Consulta el formulario que Camunda desplegó para la tarea. |
 | `GET /task/{id}/variables` | Consulta variables del proceso. |
-| `POST /task/{id}/claim` | Reclama la tarea con `{"username":"..."}`. |
-| `POST /task/{id}/complete` | Completa con las variables de Camunda en `{"variables":{...}}`. |
+| `POST /task/{id}/claim` | Reclama la tarea a nombre del funcionario con sesión. |
+| `POST /task/{id}/complete` | Completa una tarea reclamada, con las variables de Camunda en `{"variables":{...}}`. |
+
+### Ingreso y permisos
+
+Todas las rutas `/task` exigen sesión (si no hay, responden **401**). Las credenciales se verifican contra
+el motor (`/engine-rest/identity/verify`) y la sesión guarda los carriles del usuario (sus grupos de Camunda).
+Con eso CentralSys solo deja:
+
+- consultar y reclamar tareas de los carriles del funcionario (si no, **403**);
+- ver el formulario y las variables de una tarea libre de sus carriles o de una que él reclamó (si no, **403**);
+- completar solo tareas que él mismo reclamó (si no, **409**). El usuario del reclamo sale de la sesión.
+
+Usuarios de prueba (clave `1234`): `operador1`, `cuadrilla1`, `coordinador1` (C2); `analista1`, `calidad1`,
+`liquidador1` (C4); `orientador1`, `analistapqr1`, `juridica1` y `pqr1` (C7). La cookie de sesión es
+`HttpOnly` y `SameSite=Strict`, y expira tras 30 minutos sin uso.
 
 La interfaz convierte los componentes del formulario desplegado por Camunda en controles nativos, precarga
 las variables de la tarea y envía al motor los valores editables. La aplicación consulta y completa las tareas
@@ -30,6 +47,7 @@ La aplicación usa `jdbc:h2:file:../data/enel_negocio;AUTO_SERVER=TRUE`, configu
 `ENEL_NEGOCIO_JDBC_URL`, `ENEL_NEGOCIO_JDBC_DRIVER`, `ENEL_NEGOCIO_DB_USER` y `ENEL_NEGOCIO_DB_PASSWORD`.
 Configure el motor con `ENEL_CAMUNDA_URL` (por defecto `http://localhost:8081/engine-rest`).
 
-Esta interfaz es para demostración local: no implementa autenticación/autorización propia. Véase la guía
+El inicio de sesión protege CentralSys; el REST del motor (`/engine-rest`) sigue sin autenticación propia,
+como en la demostración local del motor. Véase la guía
 de [arquitectura](../docs/arquitectura-distribuida.md) y el
 [README general](../README.md).

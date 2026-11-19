@@ -1,5 +1,12 @@
 server:
   port: 8083
+  servlet:
+    session:
+      # sesión de los funcionarios (login en /api/sesion); la cookie no se envía desde otros sitios
+      timeout: 30m
+      cookie:
+        http-only: true
+        same-site: strict
 
 spring:
   datasource:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify the running ENEL applications through their public HTTP APIs."""
 
+import http.cookiejar
 import json
 import os
 import time
@@ -15,6 +16,9 @@ CENTRAL = os.environ.get("ENEL_CENTRAL_URL", "http://localhost:8083").rstrip("/"
 CORE = os.environ.get("ENEL_CORE_URL", "http://localhost:8084").rstrip("/")
 ENGINE = os.environ.get("ENEL_ENGINE_URL", "http://localhost:8081/engine-rest").rstrip("/")
 
+# CentralSys exige sesión: las cookies se conservan entre peticiones (los usuarios de prueba tienen clave 1234)
+OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
 
 def request(method, url, payload=None, expected=(200,)):
     data = None if payload is None else json.dumps(payload).encode("utf-8")
@@ -25,7 +29,7 @@ def request(method, url, payload=None, expected=(200,)):
         headers={"Content-Type": "application/json"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=15) as response:
+        with OPENER.open(req, timeout=15) as response:
             status = response.status
             body = response.read()
     except urllib.error.HTTPError as error:
@@ -44,6 +48,15 @@ def request(method, url, payload=None, expected=(200,)):
         return json.loads(text)
     except json.JSONDecodeError:
         return text
+
+
+def login_central(username, password="1234", expected=(200,)):
+    return request(
+        "POST",
+        CENTRAL + "/api/sesion",
+        {"username": username, "password": password},
+        expected=expected,
+    )
 
 
 def check(condition, message):
@@ -85,7 +98,16 @@ def wait_for_variable(process_instance_id, variable_name, timeout=30):
 
 def main():
     request("GET", PORTAL + "/api/solicitudes/plantillas/C2")
+    request("GET", CENTRAL + "/task?candidateGroup=operador-control", expected=(401,))
+    # con otro usuario: Camunda bloquea unos segundos al usuario tras un intento fallido
+    login_central("coordinador1", "clave-incorrecta", expected=(401,))
+    session = login_central("operador1")
+    check("operador-control" in session.get("grupos", []),
+          "CentralSys session does not contain the user's lanes")
     request("GET", CENTRAL + "/task?candidateGroup=operador-control")
+    request("GET", CENTRAL + "/task?candidateGroup=calidad-facturacion", expected=(403,))
+    print("PASS CentralSys login: no session 401, bad password 401, foreign lane 403")
+
     supply = request("GET", CORE + "/api/core/suministros/SUM-100208/validacion")
     check(supply.get("formatoValido") is True, "Core rejected a valid supply code")
     print("PASS application endpoints and supply validation")
@@ -257,6 +279,7 @@ def main():
     )
     check(c7_instances, "Camunda did not correlate the C7 portal message")
     c7_task = wait_for_task(c7_instances[0]["id"])
+    login_central("pqr1")  # coordinación de PQR: pertenece a los tres carriles de C7
     c7_form = request(
         "GET", CENTRAL + "/task/" + c7_task["id"] + "/deployed-form"
     )
