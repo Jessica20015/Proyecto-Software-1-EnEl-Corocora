@@ -93,6 +93,9 @@
     </bpmn:intermediateCatchEvent>
     <bpmn:userTask id="Activity_NotificarPersonalmente" name="Notificar personalmente la decisión" camunda:formRef="NotificarPersonalmente" camunda:formRefBinding="deployment" camunda:candidateGroups="orientadores-pqr">
       <bpmn:documentation>El orientador verifica la identidad, entrega copia íntegra del acto e informa los recursos, ante quién y en qué plazo (art. 67 CPACA).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:taskListener delegateExpression="${validarFormularioC7}" event="complete" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_N06</bpmn:incoming>
       <bpmn:outgoing>Flow_N07</bpmn:outgoing>
     </bpmn:userTask>
