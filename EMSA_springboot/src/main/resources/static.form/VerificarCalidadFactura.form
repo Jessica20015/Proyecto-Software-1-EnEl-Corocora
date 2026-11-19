@@ -218,10 +218,10 @@
   "type": "default",
   "id": "VerificarCalidadFactura",
   "executionPlatform": "Camunda Platform",
-  "executionPlatformVersion": "7.23.0",
+  "executionPlatformVersion": "7.24.0",
   "exporter": {
     "name": "Camunda Modeler",
     "version": "5.39.0"
   },
-  "schemaVersion": 19
+  "schemaVersion": 16
 }
