@@ -148,5 +148,5 @@
     "name": "Camunda Modeler",
     "version": "5.39.0"
   },
-  "schemaVersion": 19
+  "schemaVersion": 16
 }

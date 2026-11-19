@@ -60,6 +60,9 @@ const CATALOGO_PROCESOS = {
       { user: "calidad1", rol: "Control de Calidad de Facturación", grupo: "calidad-facturacion" },
       { user: "liquidador1", rol: "Liquidador Tarifario", grupo: "liquidadores-tarifarios" }
     ],
+    // Las tareas de C4 y C4.1 se muestran con su Camunda Form desplegado (.form, con sus defaultValue),
+    // igual que en Tasklist. El inicio sigue siendo por mensaje: C4 no tiene formulario de inicio.
+    usarFormulariosCamunda: true,
     inicio: {
       grupoPermitido: "analistas-facturacion",
       titulo: "Simular Lectura Validada (Iniciar Proceso C4)",
@@ -127,18 +130,8 @@ const FORMULARIOS_TAREA = {
   realizarReporteVisita: [
     { key: "servicioRestablecido", label: "¿Quedó restablecido el servicio?", type: "Boolean", input: "select", opciones: [["true", "Sí, servicio normalizado"], ["false", "No, pendiente intervención"]] },
     { key: "actaTrabajo", label: "Resumen del trabajo ejecutado", type: "String", input: "textarea" }
-  ],
-  Activity_RevisarExcepcion: [
-    { key: "decisionAnalista", label: "Decisión sobre la desviación de consumo", type: "String", input: "select", opciones: [["FACTURAR", "Aprobar consumo y facturar"], ["DEVOLVER_C3", "Devolver a revisión de lectura (C3)"]] },
-    { key: "justificacionAnalista", label: "Justificación del análisis", type: "String", input: "textarea" }
-  ],
-  Activity_VerificarCalidad: [
-    { key: "resultadoVerificacion", label: "Dictamen de control de calidad", type: "String", input: "select", opciones: [["APROBADA", "Aprobada (emitir factura)"], ["CORREGIR", "Rechazada (enviar a corrección)"]] },
-    { key: "observacionCalidad", label: "Notas de auditoría", type: "String", input: "textarea" }
-  ],
-  Activity_CorregirLiquidacion: [
-    { key: "motivoCorreccion", label: "Detalle de la reliquidación aplicada", type: "String", input: "textarea" }
   ]
+  // C4 no tiene entradas aquí: usa sus Camunda Forms desplegados (usarFormulariosCamunda en CATALOGO_PROCESOS.C4)
 };
 
 // ------------------------- Camunda Forms (form-js) -------------------------

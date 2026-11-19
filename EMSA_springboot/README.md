@@ -92,10 +92,10 @@ Mensajes que solo se lanzan (constancias y avisos a otros procesos): `MsgConstan
 
 ## Portal del proyecto (`static/`)
 
-`index.html` y `app.js` son una bandeja de trabajo por proceso y por rol. Para C7 el portal muestra los
-**formularios reales de Camunda** (los mismos `.form` desplegados, con sus valores por defecto y
+`index.html` y `app.js` son una bandeja de trabajo por proceso y por rol. Para C4 y C7 el portal muestra
+los **formularios reales de Camunda** (los mismos `.form` desplegados, con sus valores por defecto y
 validaciones) usando form-js 1.8.7, que va incluido en `static/vendor/form-js` con su licencia, así que
-funciona sin internet. C2 y C4 siguen usando sus listas de campos propias.
+funciona sin internet. C2 sigue usando su lista de campos propia.
 
 ## Qué cambió en los modelos
 
